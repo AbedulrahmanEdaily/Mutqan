@@ -21,6 +21,6 @@ namespace Mutqan.DAL.Models
         public Organization Organization { get; set; }
         public ICollection<ProjectMember> Members { get; set; }
         public ICollection<Sprint> Sprints { get; set; }
-        public ICollection<Task> Tasks { get; set; }
+        public ICollection<ProjectTask> Tasks { get; set; }
     }
 }

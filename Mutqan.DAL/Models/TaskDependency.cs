@@ -10,7 +10,7 @@ namespace Mutqan.DAL.Models
     {
         public Guid TaskId { get; set; }
         public Guid DependsOnTaskId { get; set; }
-        public Task Task { get; set; }
-        public Task DependsOn { get; set; }
+        public ProjectTask Task { get; set; }
+        public ProjectTask DependsOn { get; set; }
     }
 }

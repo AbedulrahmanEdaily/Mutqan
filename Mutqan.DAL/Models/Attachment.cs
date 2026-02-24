@@ -13,7 +13,7 @@ namespace Mutqan.DAL.Models
         public string FileUrl{ get; set; }
         public long FileSize { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public Task Task { get; set; }
+        public ProjectTask Task { get; set; }
         public ApplicationUser UploadedBy { get; set; }
     }
 }

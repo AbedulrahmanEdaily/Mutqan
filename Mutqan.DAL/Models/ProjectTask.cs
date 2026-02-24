@@ -19,7 +19,7 @@ namespace Mutqan.DAL.Models
         Review,
         Done
     }
-    public class Task:BaseModel
+    public class ProjectTask:BaseModel
     {
         public Guid Id { get; set; }
         public Guid ProjectId { get; set; }

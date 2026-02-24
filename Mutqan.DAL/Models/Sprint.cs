@@ -20,6 +20,6 @@ namespace Mutqan.DAL.Models
         public DateTime EndDate { get; set; }
         public SprintStatus Status { get; set; } = SprintStatus.Planning;
         public Project Project { get; set; }
-        public ICollection<Task> Tasks { get; set; }
+        public ICollection<ProjectTask> Tasks { get; set; }
     }
 }

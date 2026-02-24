@@ -13,7 +13,7 @@ namespace Mutqan.DAL.Models
         public DateTime? EndTime { get; set; }
         public int? Duration { get; set; }
         public string? Notes { get; set; }
-        public Task Task { get; set; }
+        public ProjectTask Task { get; set; }
         public ApplicationUser User { get; set; }
     }
 }

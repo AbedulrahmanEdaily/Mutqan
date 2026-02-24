@@ -12,8 +12,8 @@ using Mutqan.DAL.Data;
 namespace Mutqan.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260221024101_initial")]
-    partial class initial
+    [Migration("20260222025750_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,7 +49,7 @@ namespace Mutqan.DAL.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -74,7 +74,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("RoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -99,7 +99,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("UserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -121,7 +121,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("UserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -136,7 +136,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -155,7 +155,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("UserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Mutqan.DAL.Models.ApplicationUser", b =>
@@ -165,6 +165,12 @@ namespace Mutqan.DAL.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("CodeResetPassword")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CodeResetPasswordExpiration")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -235,7 +241,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("User", (string)null);
                 });
 
             modelBuilder.Entity("Mutqan.DAL.Models.Attachment", b =>
@@ -271,7 +277,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("UploadedByUserId");
 
-                    b.ToTable("Attachment");
+                    b.ToTable("Attachments");
                 });
 
             modelBuilder.Entity("Mutqan.DAL.Models.Comment", b =>
@@ -319,7 +325,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comment");
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("Mutqan.DAL.Models.Notification", b =>
@@ -349,7 +355,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notification");
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Mutqan.DAL.Models.Organization", b =>
@@ -389,7 +395,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organization");
+                    b.ToTable("Organizations");
                 });
 
             modelBuilder.Entity("Mutqan.DAL.Models.Project", b =>
@@ -437,7 +443,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Project");
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("Mutqan.DAL.Models.ProjectMember", b =>
@@ -465,96 +471,10 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ProjectMember");
+                    b.ToTable("ProjectMembers");
                 });
 
-            modelBuilder.Entity("Mutqan.DAL.Models.RefreshToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRevoked")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshToken");
-                });
-
-            modelBuilder.Entity("Mutqan.DAL.Models.Sprint", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Goal")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("Sprint");
-                });
-
-            modelBuilder.Entity("Mutqan.DAL.Models.Task", b =>
+            modelBuilder.Entity("Mutqan.DAL.Models.ProjectTask", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -618,7 +538,93 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("SprintId");
 
-                    b.ToTable("Task");
+                    b.ToTable("Tasks");
+                });
+
+            modelBuilder.Entity("Mutqan.DAL.Models.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("Mutqan.DAL.Models.Sprint", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Goal")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Sprints");
                 });
 
             modelBuilder.Entity("Mutqan.DAL.Models.TaskDependency", b =>
@@ -633,7 +639,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("DependsOnTaskId");
 
-                    b.ToTable("TaskDependency");
+                    b.ToTable("TaskDependencies");
                 });
 
             modelBuilder.Entity("Mutqan.DAL.Models.TaskHistory", b =>
@@ -668,7 +674,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("TaskHistory");
+                    b.ToTable("TaskHistories");
                 });
 
             modelBuilder.Entity("Mutqan.DAL.Models.TimeTracking", b =>
@@ -724,7 +730,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TimeTracking");
+                    b.ToTable("TimeTrackings");
                 });
 
             modelBuilder.Entity("Mutqan.DAL.Models.UserOrganizationHistory", b =>
@@ -752,7 +758,7 @@ namespace Mutqan.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserOrganizationHistory");
+                    b.ToTable("UserOrganizationHistories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -817,7 +823,7 @@ namespace Mutqan.DAL.Migrations
 
             modelBuilder.Entity("Mutqan.DAL.Models.Attachment", b =>
                 {
-                    b.HasOne("Mutqan.DAL.Models.Task", "Task")
+                    b.HasOne("Mutqan.DAL.Models.ProjectTask", "Task")
                         .WithMany("Attachments")
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -836,7 +842,7 @@ namespace Mutqan.DAL.Migrations
 
             modelBuilder.Entity("Mutqan.DAL.Models.Comment", b =>
                 {
-                    b.HasOne("Mutqan.DAL.Models.Task", "Task")
+                    b.HasOne("Mutqan.DAL.Models.ProjectTask", "Task")
                         .WithMany("Comments")
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -894,29 +900,7 @@ namespace Mutqan.DAL.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Mutqan.DAL.Models.RefreshToken", b =>
-                {
-                    b.HasOne("Mutqan.DAL.Models.ApplicationUser", "User")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Mutqan.DAL.Models.Sprint", b =>
-                {
-                    b.HasOne("Mutqan.DAL.Models.Project", "Project")
-                        .WithMany("Sprints")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("Mutqan.DAL.Models.Task", b =>
+            modelBuilder.Entity("Mutqan.DAL.Models.ProjectTask", b =>
                 {
                     b.HasOne("Mutqan.DAL.Models.ApplicationUser", "AssignedTo")
                         .WithMany()
@@ -940,15 +924,37 @@ namespace Mutqan.DAL.Migrations
                     b.Navigation("Sprint");
                 });
 
+            modelBuilder.Entity("Mutqan.DAL.Models.RefreshToken", b =>
+                {
+                    b.HasOne("Mutqan.DAL.Models.ApplicationUser", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Mutqan.DAL.Models.Sprint", b =>
+                {
+                    b.HasOne("Mutqan.DAL.Models.Project", "Project")
+                        .WithMany("Sprints")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("Mutqan.DAL.Models.TaskDependency", b =>
                 {
-                    b.HasOne("Mutqan.DAL.Models.Task", "DependsOn")
+                    b.HasOne("Mutqan.DAL.Models.ProjectTask", "DependsOn")
                         .WithMany("DependentOn")
                         .HasForeignKey("DependsOnTaskId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Mutqan.DAL.Models.Task", "Task")
+                    b.HasOne("Mutqan.DAL.Models.ProjectTask", "Task")
                         .WithMany("Dependencies")
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -967,7 +973,7 @@ namespace Mutqan.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Mutqan.DAL.Models.Task", "Task")
+                    b.HasOne("Mutqan.DAL.Models.ProjectTask", "Task")
                         .WithMany("History")
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -980,7 +986,7 @@ namespace Mutqan.DAL.Migrations
 
             modelBuilder.Entity("Mutqan.DAL.Models.TimeTracking", b =>
                 {
-                    b.HasOne("Mutqan.DAL.Models.Task", "Task")
+                    b.HasOne("Mutqan.DAL.Models.ProjectTask", "Task")
                         .WithMany("TimeTrackings")
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1047,12 +1053,7 @@ namespace Mutqan.DAL.Migrations
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("Mutqan.DAL.Models.Sprint", b =>
-                {
-                    b.Navigation("Tasks");
-                });
-
-            modelBuilder.Entity("Mutqan.DAL.Models.Task", b =>
+            modelBuilder.Entity("Mutqan.DAL.Models.ProjectTask", b =>
                 {
                     b.Navigation("Attachments");
 
@@ -1065,6 +1066,11 @@ namespace Mutqan.DAL.Migrations
                     b.Navigation("History");
 
                     b.Navigation("TimeTrackings");
+                });
+
+            modelBuilder.Entity("Mutqan.DAL.Models.Sprint", b =>
+                {
+                    b.Navigation("Tasks");
                 });
 #pragma warning restore 612, 618
         }

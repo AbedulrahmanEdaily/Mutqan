@@ -13,7 +13,7 @@ namespace Mutqan.DAL.Models
         public string? OldValue { get; set; }
         public string? NewValue { get; set; }
         public DateTime ChangedAt { get; set; } = DateTime.UtcNow;
-        public Task Task { get; set; }
+        public ProjectTask Task { get; set; }
         public ApplicationUser ChangedBy { get; set; }
     }
 }
