@@ -1,14 +1,19 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Mutqan.DAL.Models;
+using System.Security.Claims;
 using ProjectTask = Mutqan.DAL.Models.ProjectTask;
 
 namespace Mutqan.DAL.Data
 {
     public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         public DbSet<Organization> Organizations { get; set; }
+        public DbSet<OrganizationMember> OrganizationMembers { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<ProjectMember> ProjectMembers { get; set; }
         public DbSet<Sprint> Sprints { get; set; }
@@ -21,9 +26,9 @@ namespace Mutqan.DAL.Data
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<UserOrganizationHistory> UserOrganizationHistories { get; set; }
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        public AppDbContext(DbContextOptions<AppDbContext> options, IHttpContextAccessor httpContextAccessor ) : base(options)
         {
-
+            _httpContextAccessor = httpContextAccessor;
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -60,6 +65,68 @@ namespace Mutqan.DAL.Data
                     .WithMany()
                     .HasForeignKey(t => t.ChangedByUserId)
                     .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Organization>()
+                .HasMany(o => o.OrganizationMember)        
+                .WithOne(m => m.Organization)
+                .HasForeignKey(m => m.OrganizationId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                var entries = ChangeTracker.Entries<BaseModel>();
+                var currentUserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                foreach (var entityEntry in entries)
+                {
+                    if (entityEntry.State == EntityState.Added)
+                    {
+                        entityEntry.Property(x => x.CreatedBy).CurrentValue = currentUserId;
+                        entityEntry.Property(x => x.CreatedAt).CurrentValue = DateTime.UtcNow;
+                    }
+                    else if (entityEntry.State == EntityState.Modified)
+                    {
+                        if (entityEntry.Property(x => x.IsDeleted).CurrentValue)
+                        {
+                            entityEntry.Property(x => x.DeletedBy).CurrentValue = currentUserId;
+                            entityEntry.Property(x => x.DeletedAt).CurrentValue = DateTime.UtcNow;
+                            continue;
+                        }
+                        entityEntry.Property(x => x.UpdatedBy).CurrentValue = currentUserId;
+                        entityEntry.Property(x => x.UpdatedAt).CurrentValue = DateTime.UtcNow;
+                    }
+                }
+            }
+            return base.SaveChangesAsync(cancellationToken);
+        }
+        public override int SaveChanges()
+        {
+            if (_httpContextAccessor.HttpContext != null)
+            {
+
+                var entries = ChangeTracker.Entries<BaseModel>();
+                var currentUserId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                foreach (var entityEntry in entries)
+                {
+                    if (entityEntry.State == EntityState.Added)
+                    {
+                        entityEntry.Property(x => x.CreatedBy).CurrentValue = currentUserId;
+                        entityEntry.Property(x => x.CreatedAt).CurrentValue = DateTime.UtcNow;
+                    }
+                    else if (entityEntry.State == EntityState.Modified)
+                    {
+                        if (entityEntry.Property(x => x.IsDeleted).CurrentValue)
+                        {
+                            entityEntry.Property(x => x.DeletedBy).CurrentValue = currentUserId;
+                            entityEntry.Property(x => x.DeletedAt).CurrentValue = DateTime.UtcNow;
+                            continue;
+                        }
+                        entityEntry.Property(x => x.UpdatedBy).CurrentValue = currentUserId;
+                        entityEntry.Property(x => x.UpdatedAt).CurrentValue = DateTime.UtcNow;
+                    }
+                }
+            }
+            return base.SaveChanges();
         }
     }
 }

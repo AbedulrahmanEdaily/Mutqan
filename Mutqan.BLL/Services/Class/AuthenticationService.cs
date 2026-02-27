@@ -174,10 +174,12 @@ namespace Mutqan.BLL.Services.Class
             }
             var providerKey = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier)
             ?? claimsPrincipal.FindFirstValue("sub");
-
-            var info = new UserLoginInfo("Google", providerKey!, "Google");
-            await _userManager.AddLoginAsync(user, info);
-
+            var logins = await _userManager.GetLoginsAsync(user);
+            if (!logins.Any(l => l.LoginProvider == "Google" && l.ProviderKey == providerKey))
+            {
+                var info = new UserLoginInfo("Google", providerKey!, "Google");
+                await _userManager.AddLoginAsync(user, info);
+            }
             var accessToken = await _tokenService.GenerateAccessToken(user);
             var newRefreshToken = _tokenService.GenerateRefreshToken();
 

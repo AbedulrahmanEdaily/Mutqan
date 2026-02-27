@@ -9,8 +9,8 @@ namespace Mutqan.DAL.Models
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
-        public ICollection<ApplicationUser> Users { get; set; }
         public ICollection<Project> Projects { get; set; }
         public ICollection<UserOrganizationHistory> OrganizationHistories { get; set; }
+        public ICollection<OrganizationMember> OrganizationMember { get; set; }
     }
 }

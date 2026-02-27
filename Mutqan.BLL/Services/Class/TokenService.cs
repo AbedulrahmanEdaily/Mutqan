@@ -22,7 +22,6 @@ namespace Mutqan.BLL.Services.Class
             _config = config;
             _userManager = userManager;
         }
-
         public async Task<string> GenerateAccessToken(ApplicationUser user)
         {
             var roles = await _userManager.GetRolesAsync(user);
@@ -35,7 +34,7 @@ namespace Mutqan.BLL.Services.Class
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.UtcNow.AddMinutes(15);
+            var expires = DateTime.UtcNow.AddYears(1);
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
@@ -55,7 +54,6 @@ namespace Mutqan.BLL.Services.Class
                 return Convert.ToBase64String(randomNumber);
             }
         }
-
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
             var tokenValidationParameters = new TokenValidationParameters
