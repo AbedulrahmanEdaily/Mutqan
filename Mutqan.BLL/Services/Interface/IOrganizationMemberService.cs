@@ -1,6 +1,7 @@
 ﻿using Mutqan.DAL.DTO.Request.OrganizationRequest;
 using Mutqan.DAL.DTO.Response;
 using Mutqan.DAL.DTO.Response.OrganizationResponse;
+using Mutqan.DAL.Models;
 
 namespace Mutqan.BLL.Services.Interface
 {
@@ -10,7 +11,5 @@ namespace Mutqan.BLL.Services.Interface
         Task<BaseResponse> RemoveUserFromOrganizationAsync(string adminId,string userId);
         Task<OrganizationMemberResponse?> GetMemberByUserIdAsync(string userId,string userRequested);
         Task<List<OrganizationMemberResponse>> GetAllMemberAsync(string requesterId);
-        Task<BaseResponse> AddAdminAsync(OrganizationMemberRequest request);
-
     }
 }

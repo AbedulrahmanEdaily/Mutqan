@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Mutqan.BLL.Services.Class;
 using Mutqan.BLL.Services.Interface;
 using Mutqan.DAL.DTO.Request.OrganizationRequest;
+using Mutqan.DAL.Models;
 using System.Security.Claims;
 
 namespace Mutqan.PL.Area.User
@@ -74,16 +75,6 @@ namespace Mutqan.PL.Area.User
                 OrganizationMembers = result 
             });
         }
-        [HttpPost("AddAdmin")]
-        [Authorize(Roles = "SuperAdmin")]
-        public async Task<IActionResult> AddAdmin([FromBody] OrganizationMemberRequest request)
-        {
-            var result = await _organizationMemberService.AddAdminAsync(request);
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
-        }
+        
     }
 }

@@ -69,6 +69,7 @@ namespace Mutqan.BLL.Services.Class
             {
                 OrganizationId = request.OrganizationId,
                 UserId = request.UserId,
+                Role = request.Role
             };
             await _organizationMemberRepository.CreateAsync(member);
             var UserOrganizationHistory = new UserOrganizationHistory
@@ -83,7 +84,6 @@ namespace Mutqan.BLL.Services.Class
                 Message = "User Added Succefully"
             };
         }
-
         public async Task<OrganizationMemberResponse?> GetMemberByUserIdAsync(string userId, string userRequested)
         {
             var requesterMember = await _organizationMemberRepository.GetByUserIdAsync(userRequested);
