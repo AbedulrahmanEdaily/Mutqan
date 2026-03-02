@@ -17,8 +17,5 @@ namespace Mutqan.DAL.DTO.Request.AuthenticationRequest
         [Required]
         [MinLength(8)]
         public string Password { get; set; }
-        [Required]
-        [StringLength(10, MinimumLength = 10)]
-        public string PhoneNumber { get; set; }
     }
 }

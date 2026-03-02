@@ -7,7 +7,7 @@ namespace Mutqan.DAL.Repository.Interface
 {
     public interface IOrganizationMemberRepository:IScopedRepository
     {
-        Task<bool> IsAdminAsync(string userId,Guid organizationId);
+        Task<bool> IsOrganizationAdminAsync(string userId,Guid organizationId);
         Task<bool> IsUserInOrganizationAsync(string userId);
         Task CreateAsync(OrganizationMember organizationMember);
         Task UpdateAsync(OrganizationMember organizationMember);

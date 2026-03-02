@@ -31,7 +31,8 @@ namespace Mutqan.BLL.Services.Class
         }
         public async Task<BaseResponse> AddUserToOrganizationAsync(string adminId,OrganizationMemberRequest request)
         {
-            if(!await _organizationMemberRepository.IsAdminAsync(adminId,request.OrganizationId))
+            var adminUser = await _userManager.FindByIdAsync(adminId);
+            if(!await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, request.OrganizationId) && !await _userManager.IsInRoleAsync(adminUser,"SuperAdmin"))
             {
                 return new BaseResponse
                 {
@@ -81,7 +82,7 @@ namespace Mutqan.BLL.Services.Class
             return new BaseResponse
             {
                 Success = true,
-                Message = "User Added Succefully"
+                Message = "User added successfully"
             };
         }
         public async Task<OrganizationMemberResponse?> GetMemberByUserIdAsync(string userId, string userRequested)
@@ -121,12 +122,30 @@ namespace Mutqan.BLL.Services.Class
                     Message = "User is not in any organization"
                 };
             }
-            if (!await _organizationMemberRepository.IsAdminAsync(adminId, member.OrganizationId))
+            var adminUser = await _userManager.FindByIdAsync(adminId);
+            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, member.OrganizationId);
+            if (! isOrganizationAdmin && !await _userManager.IsInRoleAsync(adminUser, "SuperAdmin"))
             {
                 return new BaseResponse
                 {
                     Success = false,
                     Message = "User not allowed"
+                };
+            }
+            if (adminId == userId)
+            {
+                return new BaseResponse
+                {
+                    Success = false,
+                    Message = "Can't remove yourself from organization"
+                };
+            } 
+            if (isOrganizationAdmin && member.Role == OrganizationRole.Admin)
+            {
+                return new BaseResponse
+                {
+                    Success = false,
+                    Message = "Can't remove an admin"
                 };
             }
             await _organizationMemberRepository.DeleteAsync(member);
@@ -143,53 +162,6 @@ namespace Mutqan.BLL.Services.Class
             {
                 Success = true,
                 Message = "User removed from organization successfully"
-            };
-        }
-        public async Task<BaseResponse> AddAdminAsync(OrganizationMemberRequest request)
-        {
-            var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user is null)
-            {
-                return new BaseResponse
-                {
-                    Success = false,
-                    Message = "User doesn't exist"
-                };
-            }
-            var organization = await _organizationRepository.FindByIdAsync(request.OrganizationId);
-            if (organization is null)
-            {
-                return new BaseResponse
-                {
-                    Success = false,
-                    Message = "Organization doesn't exist"
-                };
-            }
-            if (await _organizationMemberRepository.IsUserInOrganizationAsync(user.Id))
-            {
-                return new BaseResponse
-                {
-                    Success = false,
-                    Message = "User is already in an organization"
-                };
-            }
-            var member = new OrganizationMember
-            {
-                OrganizationId = request.OrganizationId,
-                UserId = request.UserId,
-                Role = OrganizationRole.Admin
-            };
-            await _organizationMemberRepository.CreateAsync(member);
-            var UserOrganizationHistory = new UserOrganizationHistory
-            {
-                OrganizationMemberId = member.Id,
-                OrganizationId = organization.Id,
-            };
-            await _userOrgainzatinHistoryRepository.CreateAsync(UserOrganizationHistory);
-            return new BaseResponse
-            {
-                Success = true,
-                Message = "Admin Added Succefully"
             };
         }
     }

@@ -21,7 +21,6 @@ namespace Mutqan.DAL.Repository.Class
             await _context.AddAsync(organizationMember);
             await _context.SaveChangesAsync();
         }
-
         public async Task DeleteAsync(OrganizationMember organizationMember)
         {
             organizationMember.IsDeleted = true;
@@ -43,8 +42,7 @@ namespace Mutqan.DAL.Repository.Class
                 .Include(m => m.User)
                 .FirstOrDefaultAsync(m => m.UserId == userId && !m.IsDeleted);
         }
-
-        public async Task<bool> IsAdminAsync(string userId, Guid organizationId)
+        public async Task<bool> IsOrganizationAdminAsync(string userId, Guid organizationId)
         {
             return await _context.OrganizationMembers
                 .AnyAsync(m => m.UserId == userId
@@ -52,13 +50,11 @@ namespace Mutqan.DAL.Repository.Class
                       && m.Role == OrganizationRole.Admin
                       && !m.IsDeleted);
         }
-
         public async Task<bool> IsUserInOrganizationAsync(string userId)
         {
             return await _context.OrganizationMembers
                 .AnyAsync(m => m.UserId == userId && !m.IsDeleted);
         }
-
         public async Task UpdateAsync(OrganizationMember organizationMember)
         {
             _context.Update(organizationMember);

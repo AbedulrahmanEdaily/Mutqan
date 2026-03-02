@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Mutqan.BLL.Services.Class;
 using Mutqan.BLL.Services.Interface;
 using Mutqan.DAL.DTO.Request.OrganizationRequest;
-using Mutqan.DAL.Models;
 using System.Security.Claims;
 
 namespace Mutqan.PL.Area.User

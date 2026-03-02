@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using Mutqan.DAL.DTO.Request.OrganizationRequest;
+using Mutqan.DAL.DTO.Request.ProjectRequest;
 using Mutqan.DAL.DTO.Response.OrganizationResponse;
 using Mutqan.DAL.Models;
 using System;
@@ -17,6 +18,8 @@ namespace Mutqan.BLL.Mapester
             TypeAdapterConfig<OrganizationMember, OrganizationMemberResponse>.NewConfig()
                 .Map(dest => dest.FullName, src => src.User.FullName)
                 .Map(dest=>dest.OrganizationName , src => src.Organization.Name);
+            TypeAdapterConfig<UpdateProjectRequest, Project>.NewConfig()
+                .IgnoreNullValues(true);
         }
     }
 }
