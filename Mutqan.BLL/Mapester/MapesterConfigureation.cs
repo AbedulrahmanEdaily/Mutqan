@@ -2,6 +2,7 @@
 using Mutqan.DAL.DTO.Request.OrganizationRequest;
 using Mutqan.DAL.DTO.Request.ProjectRequest;
 using Mutqan.DAL.DTO.Response.OrganizationResponse;
+using Mutqan.DAL.DTO.Response.ProjectResponse;
 using Mutqan.DAL.Models;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,9 @@ namespace Mutqan.BLL.Mapester
                 .Map(dest=>dest.OrganizationName , src => src.Organization.Name);
             TypeAdapterConfig<UpdateProjectRequest, Project>.NewConfig()
                 .IgnoreNullValues(true);
+            TypeAdapterConfig<ProjectMember, ProjectMemberResponse>.NewConfig()
+                .Map(dest => dest.ProjectMemberId, src => src.Id)
+                .Map(dest => dest.FullName, src => src.User.FullName);
         }
     }
 }

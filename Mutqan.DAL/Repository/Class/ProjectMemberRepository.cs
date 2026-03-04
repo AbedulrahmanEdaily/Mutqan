@@ -17,12 +17,61 @@ namespace Mutqan.DAL.Repository.Class
             _context = context;
         }
 
+        public async Task AddAsync(ProjectMember member)
+        {
+            await _context.AddAsync(member);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<ProjectMember>> GetAllAsync(Guid projectId)
+        {
+            return await _context.ProjectMembers
+                .Include(m => m.Project)
+                .Include(m => m.User)
+                .Where(m => m.ProjectId == projectId && !m.IsDeleted)
+                .ToListAsync();
+        }
+
+        public async Task<ProjectMember?> GetByProjectMemberIdAsync(Guid projectMemberId)
+        {
+            return await _context.ProjectMembers
+                .Include(m => m.User)
+                .Include(m => m.Project)
+                .FirstOrDefaultAsync(
+                    m => m.Id == projectMemberId
+                    && !m.IsDeleted
+                );
+        }
+
+        public async Task<ProjectMember?> GetByUserIdAndProjectIdAsync(Guid projectId, string userId)
+        {
+            return await _context.ProjectMembers
+               .Include(m => m.Project)
+               .Include(m => m.User)
+               .FirstOrDefaultAsync(
+                   m => m.UserId == userId
+                   && m.ProjectId == projectId
+                   && !m.IsDeleted
+               );
+        }
+
         public async Task<ProjectMember?> GetByUserIdAsync(string userId)
         {
             return await _context.ProjectMembers
                 .Include(m => m.User)
+                .Include(m => m.Project)
                 .FirstOrDefaultAsync(
                     m => m.UserId == userId 
+                    && !m.IsDeleted
+                );
+        }
+
+        public async Task<bool> IsProjectHasManagerAsync(Guid projectId)
+        {
+            return await _context.ProjectMembers
+                .AnyAsync(
+                    m => m.ProjectId == projectId 
+                    && m.Role == ProjectRole.ProjectManager 
                     && !m.IsDeleted
                 );
         }
@@ -43,6 +92,13 @@ namespace Mutqan.DAL.Repository.Class
                && p.ProjectId == projectId
                && !p.IsDeleted
            );
+        }
+
+        public async Task RemoveAsync(ProjectMember member)
+        {
+            member.IsDeleted = true;
+            _context.Update(member);
+            await _context.SaveChangesAsync();
         }
     }
 }

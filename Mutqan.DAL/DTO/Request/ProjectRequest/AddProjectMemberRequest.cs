@@ -1,14 +1,15 @@
 ﻿using Mutqan.DAL.Models;
 using System.ComponentModel.DataAnnotations;
 
+
 namespace Mutqan.DAL.DTO.Request.ProjectRequest
 {
-    public class ChangeProjectStatusRequest
+    public class AddProjectMemberRequest
     {
         [Required]
         public Guid ProjectId { get; set; }
         [Required]
-        [Range(0,3)]
-        public ProjectStatus Status { get; set; }
+        public string UserId { get; set; }
+        public ProjectRole Role { get; set; } = ProjectRole.Developer;
     }
 }
