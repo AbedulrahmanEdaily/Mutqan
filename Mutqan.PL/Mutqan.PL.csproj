@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Mutqan.BLL\Mutqan.BLL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

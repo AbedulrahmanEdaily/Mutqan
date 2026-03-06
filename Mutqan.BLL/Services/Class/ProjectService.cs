@@ -21,7 +21,6 @@ namespace Mutqan.BLL.Services.Class
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
         private readonly IOrganizationRepository _organizationRepository;
         private readonly IProjectMemberRepository _projectMemberRepository;
-
         public ProjectService(IProjectRepository projectRepository
             ,UserManager<ApplicationUser> userManager
             ,IOrganizationMemberRepository organizationMemberRepository
@@ -35,7 +34,6 @@ namespace Mutqan.BLL.Services.Class
             _organizationRepository = organizationRepository;
             _projectMemberRepository = projectMemberRepository;
         }
-
         public async Task<List<ProjectResponse>> GetAllProjectAsync(string adminId)
         {
             var organizationMember = await _organizationMemberRepository.GetByUserIdAsync(adminId);
@@ -96,26 +94,25 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Project created successfully"
             };
         }
-        public async Task<BaseResponse> UpdateProjectAsync(string adminId, UpdateProjectRequest request)
+        public async Task<BaseResponse> UpdateProjectAsync(string adminId,Guid projectId, UpdateProjectRequest request)
         {
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(request.Id, adminId);
-            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, request.OrganizationId);
+            var project = await _projectRepository.FindByIdAsync(projectId);
+            if (project is null)
+            {
+                return new BaseResponse
+                {
+                    Success = false,
+                    Message = "Project not found"
+                };
+            }
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(projectId, adminId);
+            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, project.OrganizationId);
             if (!isOrganizationAdmin && !isProjectManager)
             {
                 return new BaseResponse
                 {
                     Success = false,
                     Message = "User not allowed"
-                };
-            }
-
-            var project = await _projectRepository.FindByIdAsync(request.Id);
-            if(project is null)
-            {
-                return new BaseResponse
-                {
-                    Success = false,
-                    Message = "Project not found"
                 };
             }
             request.Adapt(project);
@@ -183,6 +180,5 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Status changed successflly"
             };
         }
-
     }
 }

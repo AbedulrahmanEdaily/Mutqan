@@ -9,6 +9,8 @@ namespace Mutqan.PL
         public static void Configuration(IServiceCollection services)
         {
             services.AddTransient<IEmailSender, EmailSenderService>();
+            services.AddExceptionHandler<GlobalExceptionHandler>();
+            services.AddProblemDetails();
             var assemblyService = typeof(IScopedService).Assembly;
             services.Scan(s => s.FromAssemblies(assemblyService).AddClasses(c => c.AssignableTo<IScopedService>()).AsImplementedInterfaces().WithScopedLifetime());
             var assemblyRepository = typeof(IScopedRepository).Assembly;

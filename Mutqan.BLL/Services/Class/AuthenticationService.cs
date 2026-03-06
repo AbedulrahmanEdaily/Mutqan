@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
@@ -133,7 +132,7 @@ namespace Mutqan.BLL.Services.Class
                 httpContext: ctx,
                 action: "LoginGoogleCallback",
                 controller: "Account",
-                values: null,
+                values: new {Area = "Identity"},
                 scheme: ctx.Request.Scheme,
                 host: ctx.Request.Host
             );
@@ -308,6 +307,7 @@ namespace Mutqan.BLL.Services.Class
             if (refreshTokenInDb.ExpiryDate <= DateTime.UtcNow)
                 return new LoginResponse { Success = false, Message = "Token has expired" };
             refreshTokenInDb.IsRevoked = true;
+            await _refreshTokenRepository.UpdateAsync(refreshTokenInDb);
             var newRefreshToken = _tokenService.GenerateRefreshToken();
             var newRefreshTokenEntity = new RefreshToken
             {

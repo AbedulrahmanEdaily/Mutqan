@@ -87,7 +87,7 @@ namespace Mutqan.PL.Area.Identity
             return Challenge(properties, ["Google"]);
         }
         [HttpGet("LoginGoogleCallback")]
-        public async Task<IActionResult> LoginGoogleCallback([FromQuery] string returnUrl)
+        public async Task<IActionResult> LoginGoogleCallback()
         {
             var auth = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
             if (!auth.Succeeded)

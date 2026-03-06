@@ -61,11 +61,11 @@ namespace Mutqan.PL.Area.User
             }
             return Ok(result);
         }
-        [HttpPatch()]
-        public async Task<IActionResult> UpdateProject([FromBody] UpdateProjectRequest request)
+        [HttpPatch("{projectId}")]
+        public async Task<IActionResult> UpdateProject([FromRoute] Guid projectId,[FromBody] UpdateProjectRequest request)
         {
             var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectService.UpdateProjectAsync(adminId, request);
+            var result = await _projectService.UpdateProjectAsync(adminId,projectId, request);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))

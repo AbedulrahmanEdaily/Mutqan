@@ -15,7 +15,7 @@ namespace Mutqan.PL
 {
     public class Program
     {
-        public static async System.Threading.Tasks.Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllers();
@@ -77,6 +77,8 @@ namespace Mutqan.PL
             {
                 app.MapOpenApi();
             }
+            app.UseExceptionHandler();
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseCors("CorsPolicy");
             app.UseHttpsRedirection();

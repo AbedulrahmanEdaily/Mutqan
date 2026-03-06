@@ -1,8 +1,10 @@
 ﻿using Mapster;
 using Mutqan.DAL.DTO.Request.OrganizationRequest;
 using Mutqan.DAL.DTO.Request.ProjectRequest;
+using Mutqan.DAL.DTO.Request.SprintRequest;
 using Mutqan.DAL.DTO.Response.OrganizationResponse;
 using Mutqan.DAL.DTO.Response.ProjectResponse;
+using Mutqan.DAL.DTO.Response.SprintResponse;
 using Mutqan.DAL.Models;
 using System;
 using System.Collections.Generic;
@@ -24,6 +26,18 @@ namespace Mutqan.BLL.Mapester
             TypeAdapterConfig<ProjectMember, ProjectMemberResponse>.NewConfig()
                 .Map(dest => dest.ProjectMemberId, src => src.Id)
                 .Map(dest => dest.FullName, src => src.User.FullName);
+            TypeAdapterConfig<CreateSprintRequest, Sprint>.NewConfig()
+                .Map(dest => dest.EstimatedStartDate, src => src.StartDate)
+                .Map(dest => dest.EstimatedEndDate, src => src.EndDate);
+            TypeAdapterConfig<UpdateSprintRequest, Sprint>.NewConfig()
+                .IgnoreNullValues(true);
+            TypeAdapterConfig<Sprint, SprintResponse>.NewConfig()
+                .Map(src =>src.SprintId, dest =>dest.Id)
+                .Map(src =>src.SprintName, dest =>dest.Name);
+            TypeAdapterConfig<Sprint, SprintDetailsResponse>.NewConfig()
+                .Map(src =>src.SprintId, dest =>dest.Id)
+                .Map(src =>src.SprintName, dest =>dest.Name)
+                ;
         }
     }
 }

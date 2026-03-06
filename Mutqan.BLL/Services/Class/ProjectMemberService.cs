@@ -5,7 +5,6 @@ using Mutqan.DAL.DTO.Request.ProjectRequest;
 using Mutqan.DAL.DTO.Response;
 using Mutqan.DAL.DTO.Response.ProjectResponse;
 using Mutqan.DAL.Models;
-using Mutqan.DAL.Repository.Class;
 using Mutqan.DAL.Repository.Interface;
 namespace Mutqan.BLL.Services.Class
 {
