@@ -12,6 +12,7 @@ namespace Mutqan.DAL.Models
         public string? CodeResetPassword { get; set; }
         public DateTime? CodeResetPasswordExpiration { get; set; }
         public ICollection<RefreshToken> RefreshTokens { get; set; }
+        public ICollection<OrganizationMember> OrganizationMembers { get; set; }
         public ICollection<ProjectMember> ProjectMembers { get; set; }
         public ICollection<Comment> Comments { get; set; }
         public ICollection<Notification> Notifications { get; set; }

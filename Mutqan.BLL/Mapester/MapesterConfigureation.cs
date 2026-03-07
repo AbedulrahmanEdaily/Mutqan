@@ -7,6 +7,7 @@ using Mutqan.DAL.DTO.Response.OrganizationResponse;
 using Mutqan.DAL.DTO.Response.ProjectResponse;
 using Mutqan.DAL.DTO.Response.SprintResponse;
 using Mutqan.DAL.DTO.Response.TaskResponse;
+using Mutqan.DAL.DTO.Response.UserResponse;
 using Mutqan.DAL.Models;
 using System;
 using System.Collections.Generic;
