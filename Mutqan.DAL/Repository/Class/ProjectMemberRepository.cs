@@ -66,6 +66,16 @@ namespace Mutqan.DAL.Repository.Class
                 );
         }
 
+        public async Task<bool> IsDeveloperAsync(Guid projectId, string memberId)
+        {
+            return await _context.ProjectMembers.AnyAsync(
+                p => p.UserId == memberId
+                && p.ProjectId == projectId
+                && p.Role == ProjectRole.Developer
+                && !p.IsDeleted
+            );
+        }
+
         public async Task<bool> IsProjectHasManagerAsync(Guid projectId)
         {
             return await _context.ProjectMembers

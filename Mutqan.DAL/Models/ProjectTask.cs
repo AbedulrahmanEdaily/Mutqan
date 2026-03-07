@@ -29,8 +29,10 @@ namespace Mutqan.DAL.Models
         public string? Description { get; set; }
         public TaskPriority Priority { get; set; } = TaskPriority.Medium;
         public TaskStatus Status { get; set; } = TaskStatus.Backlog;
-        public DateTime StartDate { get; set; }
-        public DateTime? DueDate { get; set; }
+        public DateTime? EstimatedStartDate { get; set; }
+        public DateTime? EstimatedEndDate { get; set; }
+        public DateTime? ActualStartDate { get; set; }
+        public DateTime? ActualEndDate { get; set; }
         public Project Project { get; set; }
         public Sprint? Sprint { get; set; }
         public ApplicationUser? AssignedTo { get; set; }

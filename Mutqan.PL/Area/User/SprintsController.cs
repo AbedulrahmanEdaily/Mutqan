@@ -43,7 +43,7 @@ namespace Mutqan.PL.Area.User
                 return NotFound(new
                 {
                     Success = false,
-                    Message = "Sprints not found"
+                    Message = "Sprint not found"
                 });
             }
             return Ok(new

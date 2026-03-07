@@ -1,6 +1,0 @@
-@Mutqan.PL_HostAddress = http://localhost:5107
-
-GET {{Mutqan.PL_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

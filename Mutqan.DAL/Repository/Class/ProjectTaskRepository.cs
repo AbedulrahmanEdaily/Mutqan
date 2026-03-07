@@ -16,7 +16,30 @@ namespace Mutqan.DAL.Repository.Class
         {
             _context = context;
         }
-
+        public async Task<List<ProjectTask>> GetAllAsync(Guid projectId)
+        {
+            return await _context.Tasks
+                .Include(t => t.AssignedTo)
+                .Include(t => t.Sprint)
+                .Where(t => t.ProjectId == projectId && !t.IsDeleted)
+                .ToListAsync();
+        }
+        public async Task<ProjectTask?> GetTaskAsync(Guid taskId)
+        {
+            return await _context.Tasks.FirstOrDefaultAsync(t => t.Id == taskId && !t.IsDeleted);
+        }
+        public async Task<ProjectTask?> GetTaskDetailsAsync(Guid taskId)
+        {
+            return await _context.Tasks
+                .Include(t => t.Project)
+                .Include(t => t.AssignedTo)
+                .Include(t => t.Sprint)
+                .Include(t => t.Comments)
+                .Include(t => t.Attachments)
+                .Include(t => t.Dependencies)
+                .Where(t => t.Id == taskId && !t.IsDeleted)
+                .FirstOrDefaultAsync();
+        }
         public async Task MoveUncompletedTasksToBacklogAsync(Guid sprintId)
         {
             var tasks = await _context.Tasks

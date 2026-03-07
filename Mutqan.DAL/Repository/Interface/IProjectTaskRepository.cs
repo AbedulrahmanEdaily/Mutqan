@@ -8,5 +8,8 @@ namespace Mutqan.DAL.Repository.Interface
     public interface IProjectTaskRepository:IGenericRepository<ProjectTask> ,IScopedRepository
     {
         Task MoveUncompletedTasksToBacklogAsync(Guid sprintId);
+        Task<ProjectTask?> GetTaskAsync(Guid taskId);
+        Task<List<ProjectTask>> GetAllAsync(Guid projectId);
+        Task<ProjectTask?> GetTaskDetailsAsync(Guid taskId);
     }
 }
