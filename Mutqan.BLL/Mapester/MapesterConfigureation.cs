@@ -3,6 +3,7 @@ using Mutqan.DAL.DTO.Request.OrganizationRequest;
 using Mutqan.DAL.DTO.Request.ProjectRequest;
 using Mutqan.DAL.DTO.Request.SprintRequest;
 using Mutqan.DAL.DTO.Request.TaskRequest;
+using Mutqan.DAL.DTO.Response.CommentResponse;
 using Mutqan.DAL.DTO.Response.OrganizationResponse;
 using Mutqan.DAL.DTO.Response.ProjectResponse;
 using Mutqan.DAL.DTO.Response.SprintResponse;
@@ -51,6 +52,9 @@ namespace Mutqan.BLL.Mapester
                 .Map(dest => dest.AssignedToFullName, src => src.AssignedTo.FullName);
             TypeAdapterConfig<ApplicationUser, UserRespnose>.NewConfig()
                 .Map(dest => dest.IsBlocked, src => src.LockoutEnabled && src.LockoutEnd > DateTimeOffset.UtcNow);
+            TypeAdapterConfig<Comment, CommentsResponse>.NewConfig()
+                .Map(dest => dest.CommentId, src => src.Id)
+                .Map(dest => dest.IsEdited, src => src.UpdatedBy == null ? "False" : "True");
         }
     }
 }

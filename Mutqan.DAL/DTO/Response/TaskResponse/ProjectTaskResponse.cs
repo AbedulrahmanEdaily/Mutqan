@@ -1,4 +1,5 @@
-﻿using Mutqan.DAL.Models;
+﻿using Mutqan.DAL.DTO.Response.CommentResponse;
+using Mutqan.DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
