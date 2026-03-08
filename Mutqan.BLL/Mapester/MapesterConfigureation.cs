@@ -36,19 +36,21 @@ namespace Mutqan.BLL.Mapester
             TypeAdapterConfig<UpdateSprintRequest, Sprint>.NewConfig()
                 .IgnoreNullValues(true);
             TypeAdapterConfig<Sprint, SprintResponse>.NewConfig()
-                .Map(src =>src.SprintId, dest =>dest.Id)
-                .Map(src =>src.SprintName, dest =>dest.Name);
+                .Map(dest => dest.SprintId, src => src.Id)
+                .Map(dest => dest.SprintName, src => src.Name);
             TypeAdapterConfig<Sprint, SprintDetailsResponse>.NewConfig()
-                .Map(src =>src.SprintId, dest =>dest.Id)
-                .Map(src =>src.SprintName, dest =>dest.Name)
+                .Map(dest => dest.SprintId, src => src.Id)
+                .Map(dest => dest.SprintName, src => src.Name)
                 ;
             TypeAdapterConfig<UpdateTaskRequest, ProjectTask>.NewConfig()
                 .IgnoreNullValues(true);
             TypeAdapterConfig<ProjectTask,ProjectTaskResponse>.NewConfig()
-                .Map(src=>src.TaskId,dest=>dest.Id);
+                .Map(dest => dest.TaskId, src => src.Id);
             TypeAdapterConfig<ProjectTask,TaskDetailsResponse>.NewConfig()
-                .Map(src=>src.TaskId,dest=>dest.Id)
-                .Map(src=>src.AssignedToFullName,dest=>dest.AssignedTo.FullName);
+                .Map(dest => dest.TaskId, src => src.Id)
+                .Map(dest => dest.AssignedToFullName, src => src.AssignedTo.FullName);
+            TypeAdapterConfig<ApplicationUser, UserRespnose>.NewConfig()
+                .Map(dest => dest.IsBlocked, src => src.LockoutEnabled && src.LockoutEnd > DateTimeOffset.UtcNow);
         }
     }
 }

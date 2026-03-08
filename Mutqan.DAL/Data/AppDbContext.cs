@@ -71,7 +71,7 @@ namespace Mutqan.DAL.Data
                 .HasForeignKey(m => m.OrganizationId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             if (_httpContextAccessor.HttpContext != null)
             {
@@ -96,8 +96,24 @@ namespace Mutqan.DAL.Data
                         entityEntry.Property(x => x.UpdatedAt).CurrentValue = DateTime.UtcNow;
                     }
                 }
+                var taskEntries = ChangeTracker.Entries<ProjectTask>().Where(e => e.State == EntityState.Modified);
+                foreach (var entry in taskEntries)
+                {
+                    foreach (var prop in entry.Properties.Where(p => p.IsModified))
+                    {
+                        var history = new TaskHistory
+                        {
+                            TaskId = entry.Entity.Id,
+                            ChangedByUserId = currentUserId!,
+                            FieldChanged = prop.Metadata.Name,
+                            OldValue = prop.OriginalValue?.ToString(),
+                            NewValue = prop.CurrentValue?.ToString(),
+                        };
+                        await TaskHistories.AddAsync(history);
+                    }
+                }
             }
-            return base.SaveChangesAsync(cancellationToken);
+            return await base.SaveChangesAsync(cancellationToken);
         }
         public override int SaveChanges()
         {
@@ -123,6 +139,22 @@ namespace Mutqan.DAL.Data
                         }
                         entityEntry.Property(x => x.UpdatedBy).CurrentValue = currentUserId;
                         entityEntry.Property(x => x.UpdatedAt).CurrentValue = DateTime.UtcNow;
+                    }
+                }
+                var taskEntries = ChangeTracker.Entries<ProjectTask>().Where(e => e.State == EntityState.Modified);
+                foreach (var entry in taskEntries)
+                {
+                    foreach (var prop in entry.Properties.Where(p => p.IsModified))
+                    {
+                        var history = new TaskHistory
+                        {
+                            TaskId = entry.Entity.Id,
+                            ChangedByUserId = currentUserId!,
+                            FieldChanged = prop.Metadata.Name,
+                            OldValue = prop.OriginalValue?.ToString(),
+                            NewValue = prop.CurrentValue?.ToString(),
+                        };
+                        TaskHistories.AddAsync(history);
                     }
                 }
             }

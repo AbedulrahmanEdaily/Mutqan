@@ -11,7 +11,7 @@ namespace Mutqan.DAL.DTO.Response.UserResponse
         public string Id { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
-        public bool IsBloocked { get; set; }
+        public bool IsBlocked { get; set; }
         public List<string> Roles { get; set; }
     }
 }

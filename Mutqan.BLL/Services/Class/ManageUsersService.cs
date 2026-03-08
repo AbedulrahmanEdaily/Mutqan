@@ -103,7 +103,7 @@ namespace Mutqan.BLL.Services.Class
         }
         public async Task<BaseResponse> ChangeUserRoleAsync(ChangeUserRoleRequest request)
         {
-            var user = await _userManager.FindByIdAsync(request.userId);
+            var user = await _userManager.FindByIdAsync(request.UserId);
             if (user is null)
             {
                 return new BaseResponse

@@ -8,7 +8,7 @@ namespace Mutqan.DAL.DTO.Request.UserRequest
 {
     public class ChangeUserRoleRequest
     {
-        public string userId { get; set; }
+        public string UserId { get; set; }
         public string Role { get; set; }
     }
 }
