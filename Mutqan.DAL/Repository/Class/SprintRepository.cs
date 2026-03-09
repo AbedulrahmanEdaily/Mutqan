@@ -18,14 +18,14 @@ namespace Mutqan.DAL.Repository.Class
         public async Task<Sprint?> FindByIdAsync(Guid sprintId)
         {
             return await _context.Sprints
-                .Include(s=>s.Tasks)
+                .Include(s=>s.Tasks.Where(t => !t.IsDeleted))
                 .Include(s=>s.Project)
                 .FirstOrDefaultAsync(s => s.Id == sprintId && !s.IsDeleted);
         }
         public async Task<List<Sprint>> GetAllAsync(Guid projectId)
         {
             return await _context.Sprints
-                .Include(s=>s.Tasks)
+                .Include(s=>s.Tasks.Where(t => !t.IsDeleted))
                 .Include(s=>s.Project)
                 .Where(s => s.ProjectId == projectId && !s.IsDeleted)
                 .ToListAsync();

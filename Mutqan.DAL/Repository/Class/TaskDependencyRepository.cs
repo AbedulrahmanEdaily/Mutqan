@@ -69,7 +69,10 @@ namespace Mutqan.DAL.Repository.Class
         }
         public async Task<List<TaskDependency>> GetAllAsync(Guid taskId)
         {
-            return await _context.TaskDependencies.Include(d => d.DependsOn).Where(d => d.TaskId == taskId && !d.IsDeleted).ToListAsync();
+            return await _context.TaskDependencies
+                .Include(d => d.DependsOn)
+                .Where(d => d.TaskId == taskId && !d.IsDeleted)
+                .ToListAsync();
         }
     }
 }

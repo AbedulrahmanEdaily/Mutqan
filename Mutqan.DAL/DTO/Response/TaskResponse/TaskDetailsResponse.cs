@@ -1,4 +1,5 @@
 ﻿using Mutqan.DAL.DTO.Response.CommentResponse;
+using Mutqan.DAL.DTO.Response.FileResponse;
 using Mutqan.DAL.Models;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,5 @@ namespace Mutqan.DAL.DTO.Response.TaskResponse
         public DateTime? EstimatedEndDate { get; set; }
         public DateTime? ActualStartDate { get; set; }
         public DateTime? ActualEndDate { get; set; }
-        public List<CommentsResponse>? Comments { get; set; } = [];
-        //public List<TaskDependencyResponse> Dependencies { get; set; } = [];
     }
 }

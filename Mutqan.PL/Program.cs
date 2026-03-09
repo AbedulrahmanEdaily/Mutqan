@@ -1,7 +1,7 @@
 
+using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -69,6 +69,13 @@ namespace Mutqan.PL
                     policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:5174");
                 })
             );
+            var account = new Account(
+                builder.Configuration["Cloudinary:CloudName"],
+                builder.Configuration["Cloudinary:ApiKey"],
+                builder.Configuration["Cloudinary:ApiSecret"]
+            );
+            var cloudinary = new Cloudinary(account);
+            builder.Services.AddSingleton<ICloudinary>(cloudinary);
             MapesterConfigureation.Configureation();
             AppConfiguration.Configuration(builder.Services);
             builder.Services.AddTransient<ISeedData, UserSeedData>();

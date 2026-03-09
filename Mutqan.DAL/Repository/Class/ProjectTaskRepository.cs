@@ -34,9 +34,9 @@ namespace Mutqan.DAL.Repository.Class
                 .Include(t => t.Project)
                 .Include(t => t.AssignedTo)
                 .Include(t => t.Sprint)
-                .Include(t => t.Comments)
-                .Include(t => t.Attachments)
-                .Include(t => t.Dependencies)
+                .Include(t => t.Comments.Where(c => !c.IsDeleted))
+                .Include(t => t.Attachments.Where(a => !a.IsDeleted))
+                .Include(t => t.Dependencies.Where(d => !d.IsDeleted))
                 .Where(t => t.Id == taskId && !t.IsDeleted)
                 .FirstOrDefaultAsync();
         }
