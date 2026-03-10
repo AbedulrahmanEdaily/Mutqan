@@ -18,7 +18,6 @@ namespace Mutqan.DAL.Data
         public DbSet<ProjectMember> ProjectMembers { get; set; }
         public DbSet<Sprint> Sprints { get; set; }
         public DbSet<ProjectTask> Tasks { get; set; }
-        public DbSet<TaskHistory> TaskHistories { get; set; }
         public DbSet<TaskDependency> TaskDependencies { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
@@ -36,11 +35,10 @@ namespace Mutqan.DAL.Data
             builder.Entity<ApplicationUser>().ToTable("User");
             builder.Entity<IdentityRole>().ToTable("Roles");
             builder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
-            builder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims");
-            builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
-            builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins");
-            builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
-
+            builder.Ignore<IdentityUserClaim<string>>();
+            builder.Ignore<IdentityUserLogin<string>>();
+            builder.Ignore<IdentityUserToken<string>>();
+            builder.Ignore<IdentityRoleClaim<string>>();
             builder.Entity<TaskDependency>(entity =>
             {
                 entity.HasKey(x => new { x.TaskId, x.DependsOnTaskId });
@@ -60,10 +58,6 @@ namespace Mutqan.DAL.Data
             builder.Entity<Attachment>().HasOne(t => t.UploadedBy)
                     .WithMany()
                     .HasForeignKey(t => t.UploadedByUserId)
-                    .OnDelete(DeleteBehavior.Restrict);
-            builder.Entity<TaskHistory>().HasOne(t => t.ChangedBy)
-                    .WithMany()
-                    .HasForeignKey(t => t.ChangedByUserId)
                     .OnDelete(DeleteBehavior.Restrict);
             builder.Entity<Organization>()
                 .HasMany(o => o.OrganizationMember)        
@@ -96,22 +90,6 @@ namespace Mutqan.DAL.Data
                         entityEntry.Property(x => x.UpdatedAt).CurrentValue = DateTime.UtcNow;
                     }
                 }
-                var taskEntries = ChangeTracker.Entries<ProjectTask>().Where(e => e.State == EntityState.Modified);
-                foreach (var entry in taskEntries)
-                {
-                    foreach (var prop in entry.Properties.Where(p => p.IsModified))
-                    {
-                        var history = new TaskHistory
-                        {
-                            TaskId = entry.Entity.Id,
-                            ChangedByUserId = currentUserId!,
-                            FieldChanged = prop.Metadata.Name,
-                            OldValue = prop.OriginalValue?.ToString(),
-                            NewValue = prop.CurrentValue?.ToString(),
-                        };
-                        await TaskHistories.AddAsync(history);
-                    }
-                }
             }
             return await base.SaveChangesAsync(cancellationToken);
         }
@@ -139,22 +117,6 @@ namespace Mutqan.DAL.Data
                         }
                         entityEntry.Property(x => x.UpdatedBy).CurrentValue = currentUserId;
                         entityEntry.Property(x => x.UpdatedAt).CurrentValue = DateTime.UtcNow;
-                    }
-                }
-                var taskEntries = ChangeTracker.Entries<ProjectTask>().Where(e => e.State == EntityState.Modified);
-                foreach (var entry in taskEntries)
-                {
-                    foreach (var prop in entry.Properties.Where(p => p.IsModified))
-                    {
-                        var history = new TaskHistory
-                        {
-                            TaskId = entry.Entity.Id,
-                            ChangedByUserId = currentUserId!,
-                            FieldChanged = prop.Metadata.Name,
-                            OldValue = prop.OriginalValue?.ToString(),
-                            NewValue = prop.CurrentValue?.ToString(),
-                        };
-                        TaskHistories.AddAsync(history);
                     }
                 }
             }

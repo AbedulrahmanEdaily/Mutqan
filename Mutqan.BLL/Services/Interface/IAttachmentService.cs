@@ -1,10 +1,7 @@
-﻿using CloudinaryDotNet.Actions;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Mutqan.DAL.DTO.Response;
 using Mutqan.DAL.DTO.Response.FileResponse;
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 
 namespace Mutqan.BLL.Services.Interface
 {

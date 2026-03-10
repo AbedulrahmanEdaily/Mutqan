@@ -21,16 +21,17 @@ namespace Mutqan.PL.Area.User
             _projectTaskService = projectTaskService;
         }
         [HttpGet("{projectId}")]
-        public async Task<IActionResult> GetAllTasks([FromRoute] Guid projectId)
+        public async Task<IActionResult> GetAllTasks([FromRoute] Guid projectId,[FromQuery] int limit = 3,[FromQuery] int page = 1)
         {
             var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectTaskService.GetAllTasksAsync(requesterId, projectId);
-            return Ok(new
+            var result = await _projectTaskService.GetAllTasksAsync(requesterId, projectId, limit, page);
+            if (!result.Success)
             {
-                Success = true,
-                Message = "Tasks retrieved successfully",
-                Tasks = result
-            });
+                if (result.Message.Contains("not found"))
+                    return NotFound(result);
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
         [HttpGet("TaskDetails/{taskId}")]
         public async Task<IActionResult> GetTaskDetailsById([FromRoute] Guid taskId)

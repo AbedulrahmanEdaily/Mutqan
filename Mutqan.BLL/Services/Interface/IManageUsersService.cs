@@ -2,7 +2,6 @@
 using Mutqan.DAL.DTO.Response;
 using Mutqan.DAL.DTO.Response.UserResponse;
 
-
 namespace Mutqan.BLL.Services.Interface
 {
     public interface IManageUsersService : IScopedService

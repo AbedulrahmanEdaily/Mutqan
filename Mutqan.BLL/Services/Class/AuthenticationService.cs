@@ -40,7 +40,6 @@ namespace Mutqan.BLL.Services.Class
             _linkGenerator = linkGenerator;
             _httpContextAccessor = httpContextAccessor;
         }
-
         public async Task<BaseResponse> RegisterAsync(DAL.DTO.Request.AuthenticationRequest.RegisterRequest registerRequest, HttpRequest request)
         {
             var user = registerRequest.Adapt<ApplicationUser>();

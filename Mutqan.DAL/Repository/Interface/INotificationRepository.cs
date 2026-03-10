@@ -10,7 +10,7 @@ namespace Mutqan.DAL.Repository.Interface
         public Task CreateAsync(Notification notification);
         public Task UpdateAsync(Notification notification);
         public Task DeleteAsync(Notification notification);
-        public Task<List<Notification>> GetAllAsync(string userId);
+        public Task<List<Notification>> GetAllAsync(string userId, int limit = 3, int page = 1);
         public Task<Notification?> FindByIdAsync(Guid notificationId);
     }
 }

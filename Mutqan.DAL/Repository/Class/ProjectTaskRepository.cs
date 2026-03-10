@@ -16,12 +16,14 @@ namespace Mutqan.DAL.Repository.Class
         {
             _context = context;
         }
-        public async Task<List<ProjectTask>> GetAllAsync(Guid projectId)
+        public async Task<List<ProjectTask>> GetAllAsync(Guid projectId, int limit, int page )
         {
             return await _context.Tasks
                 .Include(t => t.AssignedTo)
                 .Include(t => t.Sprint)
                 .Where(t => t.ProjectId == projectId && !t.IsDeleted)
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .ToListAsync();
         }
         public async Task<ProjectTask?> GetTaskAsync(Guid taskId)

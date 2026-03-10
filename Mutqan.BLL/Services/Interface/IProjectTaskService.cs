@@ -2,10 +2,6 @@
 using Mutqan.DAL.DTO.Request.TaskRequest;
 using Mutqan.DAL.DTO.Response;
 using Mutqan.DAL.DTO.Response.TaskResponse;
-using Mutqan.DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Mutqan.BLL.Services.Interface
 {
@@ -19,7 +15,7 @@ namespace Mutqan.BLL.Services.Interface
         Task<BaseResponse> ChangeTaskPriorityAsync(string requesterId, Guid taskId, ChangeTaskPriorityRequest request);
         Task<BaseResponse> ChangeTaskStatusAsync(string userId, Guid taskId, ChangeTaskStatusRequest request);
         Task<BaseResponse> AssignTaskToDeveloperAsync(string requesterId, Guid taskId, AssignTaskToDeveloperRequest request);
-        Task<List<ProjectTaskResponse>> GetAllTasksAsync(string requesterId, Guid projectId);
+        Task<PagintedResponse<ProjectTaskResponse>> GetAllTasksAsync(string requesterId, Guid projectId, int limit = 3, int page = 1);
         Task<TaskDetailsResponse?> GetTaskDetailsAsync(string requesterId, Guid taskId);
     }
 }

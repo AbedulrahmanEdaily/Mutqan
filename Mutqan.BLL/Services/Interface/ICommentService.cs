@@ -1,9 +1,6 @@
 ﻿using Mutqan.DAL.DTO.Request.CommentRequest;
 using Mutqan.DAL.DTO.Response;
 using Mutqan.DAL.DTO.Response.CommentResponse;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Mutqan.BLL.Services.Interface
 {

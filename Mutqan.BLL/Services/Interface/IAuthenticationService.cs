@@ -3,10 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Mutqan.DAL.DTO.Request.AuthenticationRequest;
 using Mutqan.DAL.DTO.Response;
 using Mutqan.DAL.DTO.Response.AuthenicationResponse;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 
 namespace Mutqan.BLL.Services.Interface
 {

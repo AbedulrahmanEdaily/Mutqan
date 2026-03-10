@@ -61,16 +61,17 @@ namespace Mutqan.PL.Area.User
             });
         }
         [HttpGet()]
-        public async Task<IActionResult> GetAllMember()
+        public async Task<IActionResult> GetAllMember([FromQuery] int limit = 3, [FromQuery] int page = 1)
         {
             var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _organizationMemberService.GetAllMemberAsync(requesterId);
-            return Ok(new 
-            { 
-                Success = true, 
-                Message = "Organization Members retrieved successfully", 
-                OrganizationMembers = result 
-            });
+            var result = await _organizationMemberService.GetAllMemberAsync(requesterId, page, limit);
+            if (!result.Success)
+            {
+                if (result.Message.Contains("not found"))
+                    return NotFound(result);
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
         
     }

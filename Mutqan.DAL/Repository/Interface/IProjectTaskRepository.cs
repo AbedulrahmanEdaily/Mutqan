@@ -9,7 +9,7 @@ namespace Mutqan.DAL.Repository.Interface
     {
         Task MoveUncompletedTasksToBacklogAsync(Guid sprintId);
         Task<ProjectTask?> GetTaskAsync(Guid taskId);
-        Task<List<ProjectTask>> GetAllAsync(Guid projectId);
+        Task<List<ProjectTask>> GetAllAsync(Guid projectId, int limit, int page);
         Task<ProjectTask?> GetTaskDetailsAsync(Guid taskId);
     }
 }

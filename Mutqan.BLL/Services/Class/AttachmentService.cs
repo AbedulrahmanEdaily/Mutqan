@@ -7,9 +7,6 @@ using Mutqan.DAL.DTO.Response;
 using Mutqan.DAL.DTO.Response.FileResponse;
 using Mutqan.DAL.Models;
 using Mutqan.DAL.Repository.Interface;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Mutqan.BLL.Services.Class
 {
@@ -40,6 +37,15 @@ namespace Mutqan.BLL.Services.Class
                 {
                     Success = false,
                     Message = "File is empty"
+                };
+            }
+            long maxFileSize = 10 * 1024 * 1024;
+            if (file.Length > maxFileSize)
+            {
+                return new UploadFileResponse
+                {
+                    Success = false,
+                    Message = "File size must be less than 10MB"
                 };
             }
             var task = await _projectTaskRepository.GetTaskAsync(taskId);

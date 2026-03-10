@@ -37,12 +37,14 @@ namespace Mutqan.DAL.Repository.Class
                 .FirstOrDefaultAsync(n => n.Id == notificationId && !n.IsDeleted);
         }
 
-        public async Task<List<Notification>> GetAllAsync(string userId)
+        public async Task<List<Notification>> GetAllAsync(string userId, int limit = 3, int page = 1)
         {
             return await _context.Notifications
                 .Include(n => n.User)
                 .Include(n => n.Task)
                 .Where(n => n.UserId == userId && !n.IsDeleted)
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .OrderByDescending(n => n.CreatedAt)
                 .ToListAsync();
         }

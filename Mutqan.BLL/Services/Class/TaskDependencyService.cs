@@ -2,12 +2,7 @@
 using Mutqan.BLL.Services.Interface;
 using Mutqan.DAL.DTO.Response;
 using Mutqan.DAL.DTO.Response.TaskResponse;
-using Mutqan.DAL.Models;
 using Mutqan.DAL.Repository.Interface;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Mutqan.BLL.Services.Class
 {
     public class TaskDependencyService : ITaskDependencyService

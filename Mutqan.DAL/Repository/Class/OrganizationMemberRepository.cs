@@ -27,12 +27,14 @@ namespace Mutqan.DAL.Repository.Class
             _context.Update(organizationMember);
             await _context.SaveChangesAsync();
         }
-        public async Task<List<OrganizationMember>> GetByOrganizationIdAsync(Guid organizationId)
+        public async Task<List<OrganizationMember>> GetByOrganizationIdAsync(Guid organizationId, int limit = 3, int page = 1)
         {
             return await _context.OrganizationMembers
                 .Include(x => x.User)
                 .Include(x => x.Organization)
                 .Where(x => x.OrganizationId == organizationId && !x.IsDeleted)
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .ToListAsync();
         }
         public async Task<OrganizationMember?> GetByUserIdAsync(string userId)

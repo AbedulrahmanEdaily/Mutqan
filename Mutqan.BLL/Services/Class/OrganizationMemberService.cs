@@ -1,12 +1,10 @@
-﻿using Azure.Core;
-using Mapster;
+﻿using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Mutqan.BLL.Services.Interface;
 using Mutqan.DAL.DTO.Request.OrganizationRequest;
 using Mutqan.DAL.DTO.Response;
 using Mutqan.DAL.DTO.Response.OrganizationResponse;
 using Mutqan.DAL.Models;
-using Mutqan.DAL.Repository.Class;
 using Mutqan.DAL.Repository.Interface;
 
 namespace Mutqan.BLL.Services.Class
@@ -99,16 +97,29 @@ namespace Mutqan.BLL.Services.Class
             }
             return member.Adapt<OrganizationMemberResponse>();
         }
-        public async Task<List<OrganizationMemberResponse>> GetAllMemberAsync(string requesterId)
+        public async Task<PagintedResponse<OrganizationMemberResponse>> GetAllMemberAsync(string requesterId, int limit = 3, int page = 1)
         {
             var requesterMember = await _organizationMemberRepository.GetByUserIdAsync(requesterId);
 
             if (requesterMember is null)
-                return new List<OrganizationMemberResponse>();
+                return new PagintedResponse<OrganizationMemberResponse>
+                {
+                    Success = false,
+                    Message = "User not allowed"
+                };
 
             var members = await _organizationMemberRepository
-                .GetByOrganizationIdAsync(requesterMember.OrganizationId);
-            return members.Adapt<List<OrganizationMemberResponse>>();
+                .GetByOrganizationIdAsync(requesterMember.OrganizationId, limit, page);
+            var totalCount = members.Count();
+            return new PagintedResponse<OrganizationMemberResponse>
+            {
+                Success = true,
+                Message = "Members retrieved successfully",
+                Limit = limit,
+                page= page,
+                TotalCount = totalCount,
+                Data = members.Adapt<List<OrganizationMemberResponse>>()
+            };
         }
         public async Task<BaseResponse> RemoveUserFromOrganizationAsync(string requesterId,string userId)
         {

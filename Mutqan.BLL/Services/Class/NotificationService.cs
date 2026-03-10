@@ -4,11 +4,9 @@ using Mutqan.BLL.RealTime;
 using Mutqan.BLL.Services.Interface;
 using Mutqan.DAL.DTO.Response;
 using Mutqan.DAL.DTO.Response.NotificationResponse;
+using Mutqan.DAL.DTO.Response.OrganizationResponse;
 using Mutqan.DAL.Models;
 using Mutqan.DAL.Repository.Interface;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Mutqan.BLL.Services.Class
 {
@@ -52,10 +50,19 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Notification deleted"
             };
         }
-        public async Task<List<GetAllNotificationResponse>> GetMyNotificationsAsync(string requesterId)
+        public async Task<PagintedResponse<GetAllNotificationResponse>> GetMyNotificationsAsync(string requesterId, int limit = 3, int page = 1)
         {
-            var notifications = await _notificationRepository.GetAllAsync(requesterId);
-            return notifications.Adapt<List<GetAllNotificationResponse>>();
+            var notifications = await _notificationRepository.GetAllAsync(requesterId, limit, page);
+            var totalCount = notifications.Count();
+            return new PagintedResponse<GetAllNotificationResponse>
+            {
+                Success = true,
+                Message = "Notifications Member retrieved successfully",
+                Limit = limit,
+                page = page,
+                TotalCount = totalCount,
+                Data = notifications.Adapt<List<GetAllNotificationResponse>>()
+            };
         }
         public async Task<BaseResponse> MarkAsReadAsync(string requesterId, Guid notificationId)
         {

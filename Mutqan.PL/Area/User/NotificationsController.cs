@@ -19,16 +19,17 @@ namespace Mutqan.PL.Area.User
             _notificationService = notificationService;
         }
         [HttpGet("")]
-        public async Task<IActionResult> GetMyNotifications()
+        public async Task<IActionResult> GetMyNotifications([FromQuery] int limit = 3, [FromQuery]int page = 1)
         {
             var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _notificationService.GetMyNotificationsAsync(requesterId);
-            return Ok(new
+            var result = await _notificationService.GetMyNotificationsAsync(requesterId, limit, page);
+            if (!result.Success)
             {
-                Success = true,
-                Message = "Notifications Member retrieved successfully",
-                Notifications = result
-            });
+                if (result.Message.Contains("not found"))
+                    return NotFound(result);
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
         [HttpPatch("{notificationId}")]
         public async Task<IActionResult> MarkAsRead([FromRoute] Guid notificationId)

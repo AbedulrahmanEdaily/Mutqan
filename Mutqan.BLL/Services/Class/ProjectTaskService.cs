@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Identity;
 using Mutqan.BLL.Services.Interface;
 using Mutqan.DAL.DTO.Request.TaskRequest;
 using Mutqan.DAL.DTO.Response;
+using Mutqan.DAL.DTO.Response.NotificationResponse;
 using Mutqan.DAL.DTO.Response.TaskResponse;
 using Mutqan.DAL.Models;
-using Mutqan.DAL.Repository.Class;
 using Mutqan.DAL.Repository.Interface;
 
 
@@ -453,21 +453,38 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Task assigned to developer successfully"
             };
         }
-        public async Task<List<ProjectTaskResponse>> GetAllTasksAsync(string requesterId, Guid projectId)
+        public async Task<PagintedResponse<ProjectTaskResponse>> GetAllTasksAsync(string requesterId, Guid projectId, int limit = 3, int page = 1)
         {
             var project = await _projectRepository.FindByIdAsync(projectId);
             if (project is null)
             {
-                return [];
+                return new PagintedResponse<ProjectTaskResponse>
+                {
+                    Success = false,
+                    Message = "Project not found"
+                };
             }
             var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(projectId, requesterId);
             var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(requesterId, project.OrganizationId);
             if (!isProjectMember && !isOrganizationAdmin)
             {
-                return [];
+                return new PagintedResponse<ProjectTaskResponse>
+                {
+                    Success = false,
+                    Message = "User not allowed"
+                }; ;
             }
-            var tasks = await _projectTaskRepository.GetAllAsync(projectId);
-            return tasks.Adapt<List<ProjectTaskResponse>>();
+            var tasks = await _projectTaskRepository.GetAllAsync(projectId, limit, page);
+            var totalCount = tasks.Count();
+            return new PagintedResponse<ProjectTaskResponse>
+            {
+                Success = true,
+                Message = "Tasks retrieved successfully",
+                Limit = limit,
+                page = page,
+                TotalCount = totalCount,
+                Data = tasks.Adapt<List<ProjectTaskResponse>>()
+            };
         }
         public async Task<TaskDetailsResponse?> GetTaskDetailsAsync(string requesterId, Guid taskId)
         {

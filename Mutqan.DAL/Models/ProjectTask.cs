@@ -39,7 +39,6 @@ namespace Mutqan.DAL.Models
         public ICollection<Comment> Comments { get; set; }
         public ICollection<Attachment> Attachments { get; set; }
         public ICollection<TimeTracking> TimeTrackings { get; set; }
-        public ICollection<TaskHistory> History { get; set; }
         public ICollection<TaskDependency> Dependencies { get; set; }
         public ICollection<TaskDependency> DependentOn { get; set; }
     }

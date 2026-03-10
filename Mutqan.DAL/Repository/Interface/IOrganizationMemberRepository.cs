@@ -13,6 +13,6 @@ namespace Mutqan.DAL.Repository.Interface
         Task UpdateAsync(OrganizationMember organizationMember);
         Task DeleteAsync(OrganizationMember organizationMember);
         Task<OrganizationMember?> GetByUserIdAsync(string userId);
-        Task<List<OrganizationMember>> GetByOrganizationIdAsync(Guid organizationId);
+        Task<List<OrganizationMember>> GetByOrganizationIdAsync(Guid organizationId, int limit = 3, int page = 1);
     }
 }

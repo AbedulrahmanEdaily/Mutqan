@@ -6,9 +6,7 @@ using Mutqan.DAL.DTO.Request.UserRequest;
 using Mutqan.DAL.DTO.Response;
 using Mutqan.DAL.DTO.Response.UserResponse;
 using Mutqan.DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 
 namespace Mutqan.BLL.Services.Class
 {

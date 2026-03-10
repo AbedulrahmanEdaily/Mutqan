@@ -1,8 +1,5 @@
 ﻿using Mutqan.DAL.DTO.Response;
 using Mutqan.DAL.DTO.Response.TaskResponse;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Mutqan.BLL.Services.Interface
 {
