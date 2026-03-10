@@ -27,7 +27,7 @@ Mutqan is a robust, multi-tenant Scrum-based project management system that enab
 
 | Layer | Technology |
 |-------|-----------|
-| Backend Framework | ASP.NET Core 8 |
+| Backend Framework | ASP.NET Core 10 |
 | ORM | Entity Framework Core |
 | Database | SQL Server |
 | Authentication | JWT + Refresh Tokens + Google OAuth |
