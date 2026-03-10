@@ -327,44 +327,4 @@ dotnet ef database update --project Mutqan.DAL --startup-project Mutqan.PL
 dotnet run --project Mutqan.PL
 ```
 
----
-
-## Configuration
-
-In `appsettings.json`:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=...;Database=Mutqan;..."
-  },
-  "Jwt": {
-    "Key": "your_secret_key",
-    "Issuer": "your_issuer",
-    "Audience": "your_audience"
-  },
-  "Authentication": {
-    "Google": {
-      "ClientId": "your_client_id",
-      "ClientSecret": "your_client_secret"
-    }
-  },
-  "Cloudinary": {
-    "CloudName": "your_cloud_name",
-    "ApiKey": "your_api_key",
-    "ApiSecret": "your_api_secret"
-  }
-}
-```
-
----
-
-## Seeding
-
-On first run, the system automatically seeds:
-- Roles: `SuperAdmin`, `User`
-- SuperAdmin user: `admin@mutqan.com` / `Admin@123456`
-
----
-
 *Built with ❤️ by Abdulrahman*
