@@ -23,8 +23,8 @@ namespace Mutqan.PL.Area.User
         [HttpPost("{taskId}/DependsOn/{dependsOnId}")]
         public async Task<IActionResult> AddDependency([FromRoute]Guid taskId, [FromRoute] Guid dependsOnId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _taskDependencyService.AddDependencyAsync(adminId, taskId, dependsOnId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _taskDependencyService.AddDependencyAsync(requesterId, taskId, dependsOnId);
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -34,8 +34,8 @@ namespace Mutqan.PL.Area.User
         [HttpDelete("{taskId}/RemoveDependsOn/{dependsOnId}")]
         public async Task<IActionResult> RemoveDependency([FromRoute]Guid taskId, [FromRoute] Guid dependsOnId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _taskDependencyService.RemoveDependencyAsync(adminId, taskId, dependsOnId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _taskDependencyService.RemoveDependencyAsync(requesterId, taskId, dependsOnId);
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -45,8 +45,8 @@ namespace Mutqan.PL.Area.User
         [HttpGet("{taskId}")]
         public async Task<IActionResult> GetDependencies([FromRoute] Guid taskId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _taskDependencyService.GetDependenciesAsync(adminId, taskId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _taskDependencyService.GetDependenciesAsync(requesterId, taskId);
             return Ok(new
             {
                 Success = true,

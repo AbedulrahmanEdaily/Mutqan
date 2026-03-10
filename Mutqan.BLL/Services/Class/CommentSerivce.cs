@@ -17,18 +17,21 @@ namespace Mutqan.BLL.Services.Class
         private readonly ICommentRepository _commentRepository;
         private readonly IProjectMemberRepository _projectMemberRepository;
         private readonly IProjectTaskRepository _projectTaskRepository;
+        private readonly INotificationService _notificationService;
 
         public CommentSerivce(
              ICommentRepository commentRepository
             ,IProjectMemberRepository projectMemberRepository
             ,IProjectTaskRepository projectTaskRepository
+            ,INotificationService notificationService
             )
         {
             _commentRepository = commentRepository;
             _projectMemberRepository = projectMemberRepository;
             _projectTaskRepository = projectTaskRepository;
+            _notificationService = notificationService;
         }
-        public async Task<BaseResponse> AddCommentAsync(string adminId, AddCommentRequest request)
+        public async Task<BaseResponse> AddCommentAsync(string requesterId, AddCommentRequest request)
         {
             var task = await _projectTaskRepository.GetTaskAsync(request.TaskId);
             if(task is null)
@@ -39,7 +42,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Task not found"
                 };
             }
-            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(task.ProjectId, adminId);
+            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(task.ProjectId, requesterId);
             if (!isProjectMember)
             {
                 return new BaseResponse
@@ -49,15 +52,24 @@ namespace Mutqan.BLL.Services.Class
                 };
             }
             var result = request.Adapt<Comment>();
-            result.UserId = adminId;
+            result.UserId = requesterId;
             await _commentRepository.CreateAsync(result);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, requesterId);
+            var receiverId = isProjectManager ? task.AssignedToUserId : (await _projectMemberRepository.GetProjectManagerAsync(task.ProjectId))?.UserId;
+            if (receiverId is not null && receiverId != requesterId)
+                await _notificationService.SendNotificationAsync(
+                    receiverId,
+                    $"New comment added on task: {task.Title}",
+                    NotificationType.CommentAdded,
+                    task.Id
+                );
             return new BaseResponse
             {
                 Success = true,
                 Message = "Comment added successfully"
             };
         }
-        public async Task<BaseResponse> EditCommentAsync (string adminId, Guid commentId, EditCommentRequest request)
+        public async Task<BaseResponse> EditCommentAsync (string requesterId, Guid commentId, EditCommentRequest request)
         {
             var comment = await _commentRepository.FindByIdAsync(commentId);
             if (comment is null)
@@ -68,7 +80,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "comment not found"
                 };
             }
-            if (comment.UserId != adminId)
+            if (comment.UserId != requesterId)
             {
                 return new BaseResponse 
                 { 
@@ -84,7 +96,7 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Comment edited successfully"
             };
         }
-        public async Task<BaseResponse> DeleteCommentAsync(string adminId, Guid commentId)
+        public async Task<BaseResponse> DeleteCommentAsync(string requesterId, Guid commentId)
         {
             var comment = await _commentRepository.FindByIdAsync(commentId);
             if (comment is null)
@@ -95,8 +107,8 @@ namespace Mutqan.BLL.Services.Class
                     Message = "comment not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(comment.Task.ProjectId, adminId);
-            if (comment.UserId != adminId && !isProjectManager)
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(comment.Task.ProjectId, requesterId);
+            if (comment.UserId != requesterId && !isProjectManager)
             {
                 return new BaseResponse 
                 { 
@@ -111,14 +123,14 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Comment deleted successfully"
             };
         }
-        public async Task<List<CommentsResponse>> GetTaskCommentsAsync(string adminId, Guid taskId)
+        public async Task<List<CommentsResponse>> GetTaskCommentsAsync(string requesterId, Guid taskId)
         {
             var task = await _projectTaskRepository.GetTaskAsync(taskId);
             if (task is null)
             {
                 return [];
             }
-            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(task.ProjectId, adminId);
+            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(task.ProjectId, requesterId);
             if (!isProjectMember)
             {
                 return [];

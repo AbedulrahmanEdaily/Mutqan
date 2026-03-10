@@ -21,8 +21,8 @@ namespace Mutqan.PL.Area.User
         [HttpPost]
         public async Task<IActionResult> AddUserToOrganization([FromBody]OrganizationMemberRequest request)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _organizationMemberService.AddUserToOrganizationAsync(adminId,request);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _organizationMemberService.AddUserToOrganizationAsync(requesterId,request);
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -32,8 +32,8 @@ namespace Mutqan.PL.Area.User
         [HttpDelete("{userId}")]
         public async Task<IActionResult> RemoveUserFromOrganization([FromRoute] string userId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _organizationMemberService.RemoveUserFromOrganizationAsync(adminId, userId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _organizationMemberService.RemoveUserFromOrganizationAsync(requesterId, userId);
             if (!result.Success)
             {
                 return BadRequest(result);

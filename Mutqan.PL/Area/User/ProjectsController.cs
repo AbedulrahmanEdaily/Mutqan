@@ -21,8 +21,8 @@ namespace Mutqan.PL.Area.User
         [HttpGet]
         public async Task<IActionResult> GetAllProjects()
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectService.GetAllProjectAsync(adminId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectService.GetAllProjectAsync(requesterId);
             return Ok(new
             {
                 Success = true,
@@ -33,8 +33,8 @@ namespace Mutqan.PL.Area.User
         [HttpGet("{projectId}")]
         public async Task<IActionResult> GetProjectById([FromRoute] Guid projectId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectService.GetProjectByIdAsync(adminId, projectId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectService.GetProjectByIdAsync(requesterId, projectId);
             if (result is null)
             {
                 return NotFound(new
@@ -53,8 +53,8 @@ namespace Mutqan.PL.Area.User
         [HttpPost]
         public async Task<IActionResult> CreateProject([FromBody] CreateProjectRequest request)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectService.CreateProjectAsync(adminId, request);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectService.CreateProjectAsync(requesterId, request);
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -64,8 +64,8 @@ namespace Mutqan.PL.Area.User
         [HttpPatch("{projectId}")]
         public async Task<IActionResult> UpdateProject([FromRoute] Guid projectId,[FromBody] UpdateProjectRequest request)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectService.UpdateProjectAsync(adminId,projectId, request);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectService.UpdateProjectAsync(requesterId,projectId, request);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
@@ -77,8 +77,8 @@ namespace Mutqan.PL.Area.User
         [HttpDelete("{projectId}")]
         public async Task<IActionResult> DeleteProject([FromRoute] Guid projectId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectService.DeleteProjectAsync(adminId, projectId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectService.DeleteProjectAsync(requesterId, projectId);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
@@ -90,8 +90,8 @@ namespace Mutqan.PL.Area.User
         [HttpPatch("ChangeProjectStatus")]
         public async Task<IActionResult> ChangeProjectStatus([FromBody]ChangeProjectStatusRequest request)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectService.ChangeProjectStatusAsync(adminId,request);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectService.ChangeProjectStatusAsync(requesterId,request);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))

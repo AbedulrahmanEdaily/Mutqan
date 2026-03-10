@@ -8,8 +8,8 @@ namespace Mutqan.BLL.Services.Interface
 {
     public interface ITaskDependencyService : IScopedService
     {
-        Task<BaseResponse> AddDependencyAsync(string adminId, Guid taskId, Guid dependsOnTaskId);
-        Task<BaseResponse> RemoveDependencyAsync(string adminId, Guid taskId, Guid dependsOnTaskId);
-        Task<List<TaskDependencyResponse>> GetDependenciesAsync(string adminId, Guid taskId);
+        Task<BaseResponse> AddDependencyAsync(string requesterId, Guid taskId, Guid dependsOnTaskId);
+        Task<BaseResponse> RemoveDependencyAsync(string requesterId, Guid taskId, Guid dependsOnTaskId);
+        Task<List<TaskDependencyResponse>> GetDependenciesAsync(string requesterId, Guid taskId);
     }
 }

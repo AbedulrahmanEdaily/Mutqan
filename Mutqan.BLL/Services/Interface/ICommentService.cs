@@ -9,9 +9,9 @@ namespace Mutqan.BLL.Services.Interface
 {
     public interface ICommentService : IScopedService
     {
-        Task<BaseResponse> AddCommentAsync(string adminId, AddCommentRequest request);
-        Task<BaseResponse> EditCommentAsync(string adminId, Guid commentId, EditCommentRequest request);
-        Task<BaseResponse> DeleteCommentAsync(string adminId, Guid commentId);
-        Task<List<CommentsResponse>> GetTaskCommentsAsync(string adminId, Guid taskId);
+        Task<BaseResponse> AddCommentAsync(string requesterId, AddCommentRequest request);
+        Task<BaseResponse> EditCommentAsync(string requesterId, Guid commentId, EditCommentRequest request);
+        Task<BaseResponse> DeleteCommentAsync(string requesterId, Guid commentId);
+        Task<List<CommentsResponse>> GetTaskCommentsAsync(string requesterId, Guid taskId);
     }
 }

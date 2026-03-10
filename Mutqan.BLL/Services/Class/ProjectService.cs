@@ -34,41 +34,41 @@ namespace Mutqan.BLL.Services.Class
             _organizationRepository = organizationRepository;
             _projectMemberRepository = projectMemberRepository;
         }
-        public async Task<List<ProjectResponse>> GetAllProjectAsync(string adminId)
+        public async Task<List<ProjectResponse>> GetAllProjectAsync(string requesterId)
         {
-            var organizationMember = await _organizationMemberRepository.GetByUserIdAsync(adminId);
+            var organizationMember = await _organizationMemberRepository.GetByUserIdAsync(requesterId);
             if(organizationMember is null)
             {
                 return [];
             }
-            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, organizationMember.OrganizationId);
+            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(requesterId, organizationMember.OrganizationId);
             if (isOrganizationAdmin)
             {
                 var projectsForOrganizationAdmin = await _projectRepository.GetAllForOrganizationAdminAsync(organizationMember.OrganizationId);
                 return projectsForOrganizationAdmin.Adapt<List<ProjectResponse>>();
             }
 
-            var projects = await _projectRepository.GetAllForProjectMembersAsync(adminId);
+            var projects = await _projectRepository.GetAllForProjectMembersAsync(requesterId);
             return projects.Adapt<List<ProjectResponse>>();
         }
-        public async Task<ProjectResponse?> GetProjectByIdAsync(string adminId,Guid projectId)
+        public async Task<ProjectResponse?> GetProjectByIdAsync(string requesterId,Guid projectId)
         {
             var project = await _projectRepository.FindByIdAsync(projectId);
             if(project is null)
             {
                 return null;
             }
-            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, project.OrganizationId);
-            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(projectId,adminId);
+            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(requesterId, project.OrganizationId);
+            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(projectId,requesterId);
             if(!isOrganizationAdmin && !isProjectMember)
             {
                 return null;
             }
             return project.Adapt<ProjectResponse>();
         }
-        public async Task<BaseResponse> CreateProjectAsync(string adminId, CreateProjectRequest request)
+        public async Task<BaseResponse> CreateProjectAsync(string requesterId, CreateProjectRequest request)
         {
-            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(adminId,request.OrganizationId);
+            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(requesterId,request.OrganizationId);
             if (!isOrganizationAdmin)
             {
                 return new BaseResponse
@@ -94,7 +94,7 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Project created successfully"
             };
         }
-        public async Task<BaseResponse> UpdateProjectAsync(string adminId,Guid projectId, UpdateProjectRequest request)
+        public async Task<BaseResponse> UpdateProjectAsync(string requesterId,Guid projectId, UpdateProjectRequest request)
         {
             var project = await _projectRepository.FindByIdAsync(projectId);
             if (project is null)
@@ -105,8 +105,8 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Project not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(projectId, adminId);
-            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, project.OrganizationId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(projectId, requesterId);
+            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(requesterId, project.OrganizationId);
             if (!isOrganizationAdmin && !isProjectManager)
             {
                 return new BaseResponse
@@ -123,7 +123,7 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Project updated successfully"
             };
         }
-        public async Task<BaseResponse> DeleteProjectAsync(string adminId, Guid projectId)
+        public async Task<BaseResponse> DeleteProjectAsync(string requesterId, Guid projectId)
         {
             var project = await _projectRepository.FindByIdAsync(projectId);
             if (project is null)
@@ -134,7 +134,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Project not found"
                 };
             }
-            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, project.OrganizationId);
+            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(requesterId, project.OrganizationId);
             if (!isOrganizationAdmin)
             {
                 return new BaseResponse
@@ -151,7 +151,7 @@ namespace Mutqan.BLL.Services.Class
             };
             
         }
-        public async Task<BaseResponse> ChangeProjectStatusAsync(string adminId,ChangeProjectStatusRequest request)
+        public async Task<BaseResponse> ChangeProjectStatusAsync(string requesterId,ChangeProjectStatusRequest request)
         {
             var project = await _projectRepository.FindByIdAsync(request.ProjectId);
             if(project is null)
@@ -162,8 +162,8 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Project not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(project.Id,adminId);
-            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, project.OrganizationId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(project.Id,requesterId);
+            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(requesterId, project.OrganizationId);
             if(!isOrganizationAdmin && !isProjectManager)
             {
                 return new BaseResponse

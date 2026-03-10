@@ -19,8 +19,8 @@ namespace Mutqan.PL.Area.User
         [HttpPost]
         public async Task<IActionResult> AddUserToProject([FromBody]AddProjectMemberRequest request)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectMemberService.AddUserToProjectAsync(adminId, request);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectMemberService.AddUserToProjectAsync(requesterId, request);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
@@ -32,8 +32,8 @@ namespace Mutqan.PL.Area.User
         [HttpDelete("{projectId}/member/{userId}")]
         public async Task<IActionResult> RemoveUserFromProject([FromRoute]Guid projectId, [FromRoute] string userId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectMemberService.RemoveUserFromProjectAsync(adminId, projectId, userId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectMemberService.RemoveUserFromProjectAsync(requesterId, projectId, userId);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
@@ -45,8 +45,8 @@ namespace Mutqan.PL.Area.User
         [HttpGet("{projectId}/members")]
         public async Task<IActionResult> GetAllProjectMembers([FromRoute]Guid projectId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectMemberService.GetAllProjectMembersAsync(adminId,projectId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectMemberService.GetAllProjectMembersAsync(requesterId,projectId);
             return Ok(new
             {
                 Success = true,
@@ -57,8 +57,8 @@ namespace Mutqan.PL.Area.User
         [HttpGet("GetProjectMemberById/{projectMemberId}")]
         public async Task<IActionResult> GetProjectMemberbyId([FromRoute]Guid projectMemberId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectMemberService.GetProjectMemberByIdAsync(adminId, projectMemberId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectMemberService.GetProjectMemberByIdAsync(requesterId, projectMemberId);
             if (result is null)
             {
                 return NotFound(new

@@ -26,7 +26,7 @@ namespace Mutqan.BLL.Services.Class
             _projectTaskRepository = projectTaskRepository;
             _projectMemberRepository = projectMemberRepository;
         }
-        public async Task<BaseResponse> AddDependencyAsync(string adminId, Guid taskId, Guid dependsOnTaskId)
+        public async Task<BaseResponse> AddDependencyAsync(string requesterId, Guid taskId, Guid dependsOnTaskId)
         {
             if (taskId == dependsOnTaskId)
             {
@@ -45,7 +45,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Task not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, adminId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, requesterId);
             if (!isProjectManager)
             {
                 return new BaseResponse
@@ -104,7 +104,7 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Task dependency added successfully"
             };
         }
-        public async Task<BaseResponse> RemoveDependencyAsync(string adminId, Guid taskId, Guid dependsOnTaskId)
+        public async Task<BaseResponse> RemoveDependencyAsync(string requesterId, Guid taskId, Guid dependsOnTaskId)
         {
             var task = await _projectTaskRepository.GetTaskAsync(taskId);
             if (task is null)
@@ -115,7 +115,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Task not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, adminId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, requesterId);
             if (!isProjectManager)
             {
                 return new BaseResponse
@@ -148,14 +148,14 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Dependency task deleted successfully"
             };
         }
-        public async Task<List<TaskDependencyResponse>> GetDependenciesAsync(string adminId, Guid taskId)
+        public async Task<List<TaskDependencyResponse>> GetDependenciesAsync(string requesterId, Guid taskId)
         {
             var task = await _projectTaskRepository.GetTaskAsync(taskId);
             if (task is null)
             {
                 return [];
             }
-            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(task.ProjectId, adminId);
+            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(task.ProjectId, requesterId);
             if (!isProjectMember)
             {
                 return [];

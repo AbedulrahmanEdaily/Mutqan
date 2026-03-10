@@ -15,11 +15,14 @@ namespace Mutqan.DAL.Models
     public class Notification 
     {
         public Guid Id { get; set; }
+        public Guid? TaskId { get; set; }
         public string UserId { get; set; }
         public string Message { get; set; }
         public NotificationType Type { get; set; }
         public bool IsRead { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsDeleted { get; set; }
+        public ProjectTask? Task { get; set; }
         public ApplicationUser User { get; set; }
     }
 }

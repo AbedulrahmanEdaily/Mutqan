@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mutqan.DAL.Data;
 
@@ -11,9 +12,11 @@ using Mutqan.DAL.Data;
 namespace Mutqan.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260309213324_edit-time-tracking")]
+    partial class edittimetracking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -337,18 +340,12 @@ namespace Mutqan.DAL.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("TaskId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -358,8 +355,6 @@ namespace Mutqan.DAL.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TaskId");
 
                     b.HasIndex("UserId");
 
@@ -914,17 +909,11 @@ namespace Mutqan.DAL.Migrations
 
             modelBuilder.Entity("Mutqan.DAL.Models.Notification", b =>
                 {
-                    b.HasOne("Mutqan.DAL.Models.ProjectTask", "Task")
-                        .WithMany()
-                        .HasForeignKey("TaskId");
-
                     b.HasOne("Mutqan.DAL.Models.ApplicationUser", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Task");
 
                     b.Navigation("User");
                 });

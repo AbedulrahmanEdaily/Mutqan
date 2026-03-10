@@ -14,6 +14,7 @@ namespace Mutqan.BLL.Services.Class
         private readonly IProjectMemberRepository _projectMemberRepository;
         private readonly IProjectTaskRepository _projectTaskRepository;
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
+        private readonly INotificationService _notificationService;
 
         public SprintService(
              ISprintRepository sprintRepository
@@ -21,6 +22,7 @@ namespace Mutqan.BLL.Services.Class
             ,IProjectMemberRepository projectMemberRepository
             ,IProjectTaskRepository projectTaskRepository
             ,IOrganizationMemberRepository organizationMemberRepository
+            ,INotificationService notificationService
             )
         {
             _sprintRepository = sprintRepository;
@@ -28,16 +30,17 @@ namespace Mutqan.BLL.Services.Class
             _projectMemberRepository = projectMemberRepository;
             _projectTaskRepository = projectTaskRepository;
             _organizationMemberRepository = organizationMemberRepository;
+            _notificationService = notificationService;
         }
-        public async Task<List<SprintResponse>> GetAllSprintsAsync(string adminId, Guid projectId)
+        public async Task<List<SprintResponse>> GetAllSprintsAsync(string requesterId, Guid projectId)
         {
             var project = await _projectRepository.FindByIdAsync(projectId);
             if (project is null)
             {
                 return new List<SprintResponse>();
             }
-            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(projectId,adminId);
-            var IsOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, project.OrganizationId);
+            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(projectId,requesterId);
+            var IsOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(requesterId, project.OrganizationId);
             if (!isProjectMember && !IsOrganizationAdmin)
             {
                 return new List<SprintResponse>();
@@ -45,22 +48,22 @@ namespace Mutqan.BLL.Services.Class
             var sprints = await _sprintRepository.GetAllAsync(projectId);
             return sprints.Adapt<List<SprintResponse>>();
         }
-        public async Task<SprintDetailsResponse?> GetSprintDetailsAsync(string adminId, Guid sprintId)
+        public async Task<SprintDetailsResponse?> GetSprintDetailsAsync(string requesterId, Guid sprintId)
         {
             var sprint = await _sprintRepository.FindByIdAsync(sprintId);
             if (sprint is null)
             {
                 return null;
             }
-            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(sprint.ProjectId, adminId);
-            var IsOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, sprint.Project.OrganizationId);
+            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(sprint.ProjectId, requesterId);
+            var IsOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(requesterId, sprint.Project.OrganizationId);
             if (!isProjectMember && !IsOrganizationAdmin)
             {
                 return null;
             }
             return sprint.Adapt<SprintDetailsResponse>();
         }
-        public async Task<BaseResponse> CreateSprintAsync(string adminId,CreateSprintRequest request)
+        public async Task<BaseResponse> CreateSprintAsync(string requesterId,CreateSprintRequest request)
         {
             var project = await _projectRepository.FindByIdAsync(request.ProjectId);
             if(project is null)
@@ -71,7 +74,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Project not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(project.Id, adminId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(project.Id, requesterId);
             if (!isProjectManager)
             {
                 return new BaseResponse
@@ -95,7 +98,7 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Sprint created successfully"
             };
         }
-        public async Task<BaseResponse> UpdateSprintAsync(string adminId,Guid sprintId,UpdateSprintRequest request)
+        public async Task<BaseResponse> UpdateSprintAsync(string requesterId,Guid sprintId,UpdateSprintRequest request)
         {
             var sprint = await _sprintRepository.FindByIdAsync(sprintId);
             if (sprint is null)
@@ -106,7 +109,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Sprint not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(sprint.ProjectId, adminId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(sprint.ProjectId, requesterId);
             if (!isProjectManager)
             {
                 return new BaseResponse
@@ -139,7 +142,7 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Sprint updated successfully"
             };
         }
-        public async Task<BaseResponse> DeleteSprintAsync (string adminId, Guid sprintId)
+        public async Task<BaseResponse> DeleteSprintAsync (string requesterId, Guid sprintId)
         {
             var sprint = await _sprintRepository.FindByIdAsync(sprintId);
             if (sprint is null)
@@ -150,7 +153,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Sprint not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(sprint.ProjectId, adminId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(sprint.ProjectId, requesterId);
             if (!isProjectManager)
             {
                 return new BaseResponse
@@ -174,7 +177,7 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Sprint deleted successfully"
             };
         }
-        public async Task<BaseResponse> StartSprintAsync (string adminId, Guid sprintId)
+        public async Task<BaseResponse> StartSprintAsync (string requesterId, Guid sprintId)
         {
             var sprint = await _sprintRepository.FindByIdAsync(sprintId);
             if (sprint is null)
@@ -185,7 +188,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Sprint not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(sprint.ProjectId, adminId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(sprint.ProjectId, requesterId);
             if (!isProjectManager)
             {
                 return new BaseResponse
@@ -205,13 +208,23 @@ namespace Mutqan.BLL.Services.Class
             sprint.ActualStartDate = DateTime.UtcNow;
             sprint.Status = SprintStatus.Active;
             await _sprintRepository.UpdateAsync(sprint);
+            var projectMembers = await _projectMemberRepository.GetAllAsync(sprint.ProjectId);
+            foreach (var member in projectMembers)
+            {
+                await _notificationService.SendNotificationAsync(
+                    member.UserId,
+                    $"Sprint '{sprint.Name}' has started",
+                    NotificationType.SprintStarted,
+                    null
+                );
+            }
             return new BaseResponse
             {
                 Success = true,
                 Message = "Sprint started successfully"
             };
         }
-        public async Task<BaseResponse> CompleteSprintAsync(string adminId, Guid sprintId)
+        public async Task<BaseResponse> CompleteSprintAsync(string requesterId, Guid sprintId)
         {
             var sprint = await _sprintRepository.FindByIdAsync(sprintId);
             if (sprint is null)
@@ -222,7 +235,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Sprint not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(sprint.ProjectId, adminId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(sprint.ProjectId, requesterId);
             if (!isProjectManager)
             {
                 return new BaseResponse
@@ -243,6 +256,16 @@ namespace Mutqan.BLL.Services.Class
             sprint.ActualEndDate = DateTime.UtcNow;
             sprint.Status = SprintStatus.Completed;
             await _sprintRepository.UpdateAsync(sprint);
+            var projectMembers = await _projectMemberRepository.GetAllAsync(sprint.ProjectId);
+            foreach (var member in projectMembers)
+            {
+                await _notificationService.SendNotificationAsync(
+                    member.UserId,
+                    $"Sprint '{sprint.Name}' has been completed",
+                    NotificationType.SprintCompleted,
+                    null
+                );
+            }
             return new BaseResponse
             {
                 Success = true,

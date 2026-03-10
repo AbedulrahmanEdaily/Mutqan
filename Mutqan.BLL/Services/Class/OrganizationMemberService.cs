@@ -29,10 +29,10 @@ namespace Mutqan.BLL.Services.Class
             _userOrgainzatinHistoryRepository = userOrgainzatinHistoryRepository;
             _userManager = userManager;
         }
-        public async Task<BaseResponse> AddUserToOrganizationAsync(string adminId,OrganizationMemberRequest request)
+        public async Task<BaseResponse> AddUserToOrganizationAsync(string requesterId,OrganizationMemberRequest request)
         {
-            var adminUser = await _userManager.FindByIdAsync(adminId);
-            if(!await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, request.OrganizationId) && !await _userManager.IsInRoleAsync(adminUser,"SuperAdmin"))
+            var adminUser = await _userManager.FindByIdAsync(requesterId);
+            if(!await _organizationMemberRepository.IsOrganizationAdminAsync(requesterId, request.OrganizationId) && !await _userManager.IsInRoleAsync(adminUser,"SuperAdmin"))
             {
                 return new BaseResponse
                 {
@@ -110,7 +110,7 @@ namespace Mutqan.BLL.Services.Class
                 .GetByOrganizationIdAsync(requesterMember.OrganizationId);
             return members.Adapt<List<OrganizationMemberResponse>>();
         }
-        public async Task<BaseResponse> RemoveUserFromOrganizationAsync(string adminId,string userId)
+        public async Task<BaseResponse> RemoveUserFromOrganizationAsync(string requesterId,string userId)
         {
             var member = await _organizationMemberRepository.GetByUserIdAsync(userId);
 
@@ -122,8 +122,8 @@ namespace Mutqan.BLL.Services.Class
                     Message = "User is not in any organization"
                 };
             }
-            var adminUser = await _userManager.FindByIdAsync(adminId);
-            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, member.OrganizationId);
+            var adminUser = await _userManager.FindByIdAsync(requesterId);
+            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(requesterId, member.OrganizationId);
             if (! isOrganizationAdmin && !await _userManager.IsInRoleAsync(adminUser, "SuperAdmin"))
             {
                 return new BaseResponse
@@ -132,7 +132,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "User not allowed"
                 };
             }
-            if (adminId == userId)
+            if (requesterId == userId)
             {
                 return new BaseResponse
                 {

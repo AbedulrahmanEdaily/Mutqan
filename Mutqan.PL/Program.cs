@@ -1,4 +1,3 @@
-
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -6,9 +5,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Mutqan.BLL.Mapester;
+using Mutqan.BLL.RealTime;
 using Mutqan.DAL.Data;
 using Mutqan.DAL.Models;
 using Mutqan.DAL.Utils;
+using System.Net;
 using System.Text;
 
 namespace Mutqan.PL
@@ -20,6 +21,7 @@ namespace Mutqan.PL
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllers();
             builder.Services.AddOpenApi();
+            builder.Services.AddSignalR();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -47,6 +49,16 @@ namespace Mutqan.PL
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
                 {
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var token = context.Request.Query["access_token"];
+                            if (!string.IsNullOrEmpty(token))
+                                context.Token = token;
+                            return Task.CompletedTask;
+                        }
+                    };
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -84,14 +96,14 @@ namespace Mutqan.PL
             {
                 app.MapOpenApi();
             }
-            app.UseExceptionHandler();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseCors("CorsPolicy");
-            app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseExceptionHandler();
+            app.MapHub<NotificationHub>("/hubs/notifications");
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -102,7 +114,6 @@ namespace Mutqan.PL
                 }
             }
             app.MapControllers();
-
             app.Run();
         }
     }

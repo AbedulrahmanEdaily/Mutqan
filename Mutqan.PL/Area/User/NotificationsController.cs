@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Mutqan.BLL.Services.Class;
 using Mutqan.BLL.Services.Interface;
 using System.Security.Claims;
 
@@ -11,31 +10,31 @@ namespace Mutqan.PL.Area.User
     [Route("api/[Area]/[controller]")]
     [ApiController]
     [Authorize(Roles = "User")]
-    public class AttachmentsController : ControllerBase
+    public class NotificationsController : ControllerBase
     {
-        private readonly IAttachmentService _attachmentService;
+        private readonly INotificationService _notificationService;
 
-        public AttachmentsController(IAttachmentService attachmentService)
+        public NotificationsController(INotificationService notificationService)
         {
-            _attachmentService = attachmentService;
+            _notificationService = notificationService;
         }
-        [HttpGet("{taskId}")]
-        public async Task<IActionResult> GetTaskAttachments([FromRoute] Guid taskId)
+        [HttpGet("")]
+        public async Task<IActionResult> GetMyNotifications()
         {
             var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _attachmentService.GetTaskAttachmentsAsync(requesterId, taskId);
+            var result = await _notificationService.GetMyNotificationsAsync(requesterId);
             return Ok(new
             {
                 Success = true,
-                Message = "Attachments retrieved successfully",
-                Attachments = result
+                Message = "Notifications Member retrieved successfully",
+                Notifications = result
             });
         }
-        [HttpPost("{taskId}")]
-        public async Task<IActionResult> AddAttachment([FromRoute]Guid taskId, IFormFile file)
+        [HttpPatch("{notificationId}")]
+        public async Task<IActionResult> MarkAsRead([FromRoute] Guid notificationId)
         {
             var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _attachmentService.AddAttachmentAsync(requesterId, taskId, file);
+            var result = await _notificationService.MarkAsReadAsync(requesterId, notificationId);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
@@ -44,11 +43,11 @@ namespace Mutqan.PL.Area.User
             }
             return Ok(result);
         }
-        [HttpDelete("{attachmentId}")]
-        public async Task<IActionResult> DeleteAttachment([FromRoute]Guid attachmentId)
+        [HttpDelete("{notificationId}")]
+        public async Task<IActionResult> DeleteNotification([FromRoute] Guid notificationId)
         {
             var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _attachmentService.DeleteAttachmentAsync(requesterId, attachmentId);
+            var result = await _notificationService.DeleteNotificationAsync(requesterId, notificationId);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))

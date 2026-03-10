@@ -23,8 +23,8 @@ namespace Mutqan.PL.Area.User
         [HttpGet("{projectId}")]
         public async Task<IActionResult> GetAllTasks([FromRoute] Guid projectId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectTaskService.GetAllTasksAsync(adminId, projectId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectTaskService.GetAllTasksAsync(requesterId, projectId);
             return Ok(new
             {
                 Success = true,
@@ -35,8 +35,8 @@ namespace Mutqan.PL.Area.User
         [HttpGet("TaskDetails/{taskId}")]
         public async Task<IActionResult> GetTaskDetailsById([FromRoute] Guid taskId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectTaskService.GetTaskDetailsAsync(adminId, taskId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectTaskService.GetTaskDetailsAsync(requesterId, taskId);
             if (result is null)
             {
                 return NotFound(new
@@ -55,8 +55,8 @@ namespace Mutqan.PL.Area.User
         [HttpPost]
         public async Task<IActionResult> CreateTask([FromBody]CreateTaskRequest request)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectTaskService.CreateTaskAsync(adminId, request);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectTaskService.CreateTaskAsync(requesterId, request);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
@@ -68,8 +68,8 @@ namespace Mutqan.PL.Area.User
         [HttpPatch("{taskId}")]
         public async Task<IActionResult> UpdateTask([FromBody]UpdateTaskRequest request, [FromRoute] Guid taskId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectTaskService.UpdateTaskAsync(adminId, taskId, request);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectTaskService.UpdateTaskAsync(requesterId, taskId, request);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
@@ -81,8 +81,8 @@ namespace Mutqan.PL.Area.User
         [HttpDelete("{taskId}")]
         public async Task<IActionResult> DeleteTask([FromRoute] Guid taskId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectTaskService.DeleteTaskAsync(adminId, taskId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectTaskService.DeleteTaskAsync(requesterId, taskId);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
@@ -94,8 +94,8 @@ namespace Mutqan.PL.Area.User
         [HttpPatch("AddTaskToSprint")]
         public async Task<IActionResult> AddTaskToSprint([FromBody]AddTaskToSprintRequest request)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectTaskService.AddTaskToSprintAsync(adminId,request);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectTaskService.AddTaskToSprintAsync(requesterId,request);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
@@ -107,8 +107,8 @@ namespace Mutqan.PL.Area.User
         [HttpPatch("RemoveTaskFromSprint/{taskId}")]
         public async Task<IActionResult> RemoveTaskFromSprint([FromRoute] Guid taskId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectTaskService.RemoveTaskFromSprintAsync(adminId, taskId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectTaskService.RemoveTaskFromSprintAsync(requesterId, taskId);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
@@ -120,8 +120,8 @@ namespace Mutqan.PL.Area.User
         [HttpPatch("ChangeTaskPriority/{taskId}")]
         public async Task<IActionResult> ChangeTaskPriority([FromRoute] Guid taskId, [FromBody] ChangeTaskPriorityRequest request)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectTaskService.ChangeTaskPriorityAsync(adminId, taskId, request);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectTaskService.ChangeTaskPriorityAsync(requesterId, taskId, request);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
@@ -133,8 +133,8 @@ namespace Mutqan.PL.Area.User
         [HttpPatch("ChangeTaskStatus/{taskId}")]
         public async Task<IActionResult> ChangeTaskStatus([FromRoute] Guid taskId, [FromBody] ChangeTaskStatusRequest request)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectTaskService.ChangeTaskStatusAsync(adminId, taskId, request);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectTaskService.ChangeTaskStatusAsync(requesterId, taskId, request);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
@@ -146,8 +146,8 @@ namespace Mutqan.PL.Area.User
         [HttpPatch("AssignTaskToDeveloper/{taskId}")]
         public async Task<IActionResult> AssignTaskToDeveloper([FromRoute] Guid taskId, [FromBody] AssignTaskToDeveloperRequest request)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _projectTaskService.AssignTaskToDeveloperAsync(adminId, taskId, request);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _projectTaskService.AssignTaskToDeveloperAsync(requesterId, taskId, request);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))

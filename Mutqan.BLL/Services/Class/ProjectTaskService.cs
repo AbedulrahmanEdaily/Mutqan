@@ -21,6 +21,7 @@ namespace Mutqan.BLL.Services.Class
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ITaskDependencyRepository _taskDependencyRepository;
         private readonly IOrganizationMemberRepository _organizationMemberRepository;
+        private readonly INotificationService _notificationService;
 
         public ProjectTaskService(
              IProjectTaskRepository projectTaskRepository
@@ -30,6 +31,7 @@ namespace Mutqan.BLL.Services.Class
             ,UserManager<ApplicationUser> userManager
             ,ITaskDependencyRepository taskDependencyRepository
             ,IOrganizationMemberRepository organizationMemberRepository
+            ,INotificationService notificationService
             )
         {
             _projectTaskRepository = projectTaskRepository;
@@ -39,8 +41,9 @@ namespace Mutqan.BLL.Services.Class
             _userManager = userManager;
             _taskDependencyRepository = taskDependencyRepository;
             _organizationMemberRepository = organizationMemberRepository;
+            _notificationService = notificationService;
         }
-        public async Task<BaseResponse> CreateTaskAsync(string adminId, CreateTaskRequest request)
+        public async Task<BaseResponse> CreateTaskAsync(string requesterId, CreateTaskRequest request)
         {
             var project = await _projectRepository.FindByIdAsync(request.ProjectId);
             if(project is null)
@@ -51,7 +54,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Project not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(project.Id, adminId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(project.Id, requesterId);
             if (!isProjectManager)
             {
                 return new BaseResponse
@@ -76,7 +79,7 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Task created successfully"
             };
         }
-        public async Task<BaseResponse> UpdateTaskAsync(string adminId, Guid taskId, UpdateTaskRequest request)
+        public async Task<BaseResponse> UpdateTaskAsync(string requesterId, Guid taskId, UpdateTaskRequest request)
         {
             var task = await _projectTaskRepository.GetTaskAsync(taskId);
             if (task is null)
@@ -87,7 +90,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "task not foudn"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, adminId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, requesterId);
             if (!isProjectManager)
             {
                 return new BaseResponse
@@ -120,7 +123,7 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Task updated successfully"
             };
         }
-        public async Task<BaseResponse> DeleteTaskAsync(string adminId, Guid taskId)
+        public async Task<BaseResponse> DeleteTaskAsync(string requesterId, Guid taskId)
         {
             var task = await _projectTaskRepository.GetTaskAsync(taskId);
             if (task is null)
@@ -131,7 +134,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "task not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, adminId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, requesterId);
             if (!isProjectManager)
             {
                 return new BaseResponse
@@ -155,7 +158,7 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Task deleted successfully"
             };
         }
-        public async Task<BaseResponse> AddTaskToSprintAsync(string adminId, AddTaskToSprintRequest request)
+        public async Task<BaseResponse> AddTaskToSprintAsync(string requesterId, AddTaskToSprintRequest request)
         {
             var sprint = await _sprintRepository.FindByIdAsync(request.SprintId);
             if (sprint is null)
@@ -166,7 +169,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Sprint not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(sprint.ProjectId, adminId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(sprint.ProjectId, requesterId);
             if (!isProjectManager)
             {
                 return new BaseResponse
@@ -235,7 +238,7 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Task assigned to sprint successfully"
             };
         }
-        public async Task<BaseResponse> RemoveTaskFromSprintAsync(string adminId, Guid taskId)
+        public async Task<BaseResponse> RemoveTaskFromSprintAsync(string requesterId, Guid taskId)
         {
             var task = await _projectTaskRepository.GetTaskAsync(taskId);
             if (task is null)
@@ -246,7 +249,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Task not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, adminId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, requesterId);
             if (!isProjectManager)
             {
                 return new BaseResponse
@@ -282,7 +285,7 @@ namespace Mutqan.BLL.Services.Class
                 Message = "Task removed from sprint successfully"
             };
         }
-        public async Task<BaseResponse> ChangeTaskPriorityAsync(string adminId, Guid taskId, ChangeTaskPriorityRequest request)
+        public async Task<BaseResponse> ChangeTaskPriorityAsync(string requesterId, Guid taskId, ChangeTaskPriorityRequest request)
         {
             var task = await _projectTaskRepository.GetTaskAsync(taskId);
             if (task is null)
@@ -293,7 +296,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Task not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, adminId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, requesterId);
             if (!isProjectManager)
             {
                 return new BaseResponse
@@ -368,13 +371,22 @@ namespace Mutqan.BLL.Services.Class
                 task.ActualEndDate = DateTime.UtcNow;
             task.Status = request.Status;
             await _projectTaskRepository.UpdateAsync(task);
+            var projectManager = await _projectMemberRepository.GetProjectManagerAsync(task.ProjectId);
+            var receiverId = isProjectManager? task.AssignedToUserId : projectManager?.UserId; 
+            if (receiverId is not null)
+                await _notificationService.SendNotificationAsync(
+                    receiverId,
+                    $"Task '{task.Title}' status changed to {task.Status}",
+                    NotificationType.TaskStatusChanged,
+                    taskId
+                );
             return new BaseResponse
             {
                 Success = true,
                 Message = "Status changed successfully"
             };
         }
-        public async Task<BaseResponse> AssignTaskToDeveloperAsync(string adminId, Guid taskId, AssignTaskToDeveloperRequest request)
+        public async Task<BaseResponse> AssignTaskToDeveloperAsync(string requesterId, Guid taskId, AssignTaskToDeveloperRequest request)
         {
             var task = await _projectTaskRepository.GetTaskAsync(taskId);
             if (task is null)
@@ -385,7 +397,7 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Task not found"
                 };
             }
-            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, adminId);
+            var isProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, requesterId);
             if (!isProjectManager)
             {
                 return new BaseResponse
@@ -422,41 +434,34 @@ namespace Mutqan.BLL.Services.Class
                     Message = "Cannot change assignee while task is in progress or completed"
                 };
             }
-            var user = await _userManager.FindByIdAsync(request.DeveloperId);
-            if (user is null)
-            {
-                return new BaseResponse
-                {
-                    Success = false,
-                    Message = "Developer not found"
-                };
-            }
+            var IsProjectManager = await _projectMemberRepository.IsProjectManagerAsync(task.ProjectId, request.DeveloperId);
             var isDeveloper = await _projectMemberRepository.IsDeveloperAsync(task.ProjectId, request.DeveloperId);
-            if (!isDeveloper)
+            if (!isDeveloper && !isProjectManager)
             {
                 return new BaseResponse
                 {
                     Success = false,
-                    Message = "User is not a developer in this project"
+                    Message = "User is not a member in this project"
                 };
             }
             task.AssignedToUserId = request.DeveloperId;
             await _projectTaskRepository.UpdateAsync(task);
+            await _notificationService.SendNotificationAsync(task.AssignedToUserId, $"You have been assigned to task: {task.Title}", NotificationType.TaskAssigned, taskId);
             return new BaseResponse
             {
                 Success = true,
                 Message = "Task assigned to developer successfully"
             };
         }
-        public async Task<List<ProjectTaskResponse>> GetAllTasksAsync(string adminId, Guid projectId)
+        public async Task<List<ProjectTaskResponse>> GetAllTasksAsync(string requesterId, Guid projectId)
         {
             var project = await _projectRepository.FindByIdAsync(projectId);
             if (project is null)
             {
                 return [];
             }
-            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(projectId, adminId);
-            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, project.OrganizationId);
+            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(projectId, requesterId);
+            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(requesterId, project.OrganizationId);
             if (!isProjectMember && !isOrganizationAdmin)
             {
                 return [];
@@ -464,15 +469,15 @@ namespace Mutqan.BLL.Services.Class
             var tasks = await _projectTaskRepository.GetAllAsync(projectId);
             return tasks.Adapt<List<ProjectTaskResponse>>();
         }
-        public async Task<TaskDetailsResponse?> GetTaskDetailsAsync(string adminId, Guid taskId)
+        public async Task<TaskDetailsResponse?> GetTaskDetailsAsync(string requesterId, Guid taskId)
         {
             var task = await _projectTaskRepository.GetTaskDetailsAsync(taskId);
             if(task is null)
             {
                 return null;
             }
-            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(task.ProjectId, adminId);
-            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(adminId, task.Project.OrganizationId);
+            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(task.ProjectId, requesterId);
+            var isOrganizationAdmin = await _organizationMemberRepository.IsOrganizationAdminAsync(requesterId, task.Project.OrganizationId);
             if (!isProjectMember && !isOrganizationAdmin)
             {
                 return null;

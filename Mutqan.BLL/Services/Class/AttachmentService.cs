@@ -120,14 +120,14 @@ namespace Mutqan.BLL.Services.Class
                 Message = "File deleted successfully"
             };
         }
-        public async Task<List<AttachmentResponse>> GetTaskAttachmentsAsync(string adminId, Guid taskId)
+        public async Task<List<AttachmentResponse>> GetTaskAttachmentsAsync(string requesterId, Guid taskId)
         {
             var task = await _projectTaskRepository.GetTaskAsync(taskId);
             if (task is null)
             {
                 return [];
             }
-            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(task.ProjectId, adminId);
+            var isProjectMember = await _projectMemberRepository.isProjectMemberAsync(task.ProjectId, requesterId);
             if (!isProjectMember)
             {
                 return [];

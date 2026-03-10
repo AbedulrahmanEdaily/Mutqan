@@ -12,6 +12,6 @@ namespace Mutqan.BLL.Services.Interface
     {
         Task<UploadFileResponse> AddAttachmentAsync(string userId, Guid taskId, IFormFile file);
         Task<BaseResponse> DeleteAttachmentAsync(string userId, Guid attachmentId);
-        Task<List<AttachmentResponse>> GetTaskAttachmentsAsync(string adminId, Guid taskId);
+        Task<List<AttachmentResponse>> GetTaskAttachmentsAsync(string requesterId, Guid taskId);
     }
 }

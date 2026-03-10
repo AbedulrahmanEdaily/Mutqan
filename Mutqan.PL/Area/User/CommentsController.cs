@@ -24,8 +24,8 @@ namespace Mutqan.PL.Area.User
         [HttpGet("{taskId}")]
         public async Task<IActionResult> GetTaskComments([FromRoute] Guid taskId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _commentService.GetTaskCommentsAsync(adminId, taskId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _commentService.GetTaskCommentsAsync(requesterId, taskId);
             return Ok(new
             {
                 Success = true,
@@ -36,8 +36,8 @@ namespace Mutqan.PL.Area.User
         [HttpPost]
         public async Task<IActionResult> CreateComment([FromBody] AddCommentRequest request)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _commentService.AddCommentAsync(adminId, request);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _commentService.AddCommentAsync(requesterId, request);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
@@ -49,8 +49,8 @@ namespace Mutqan.PL.Area.User
         [HttpPatch("{commentId}")]
         public async Task<IActionResult> EditComment([FromRoute] Guid commentId, [FromBody] EditCommentRequest request)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _commentService.EditCommentAsync(adminId, commentId, request);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _commentService.EditCommentAsync(requesterId, commentId, request);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))
@@ -62,8 +62,8 @@ namespace Mutqan.PL.Area.User
         [HttpDelete("{commentId}")]
         public async Task<IActionResult> DeleteComment([FromRoute] Guid commentId)
         {
-            var adminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _commentService.DeleteCommentAsync(adminId, commentId);
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _commentService.DeleteCommentAsync(requesterId, commentId);
             if (!result.Success)
             {
                 if (result.Message.Contains("not found"))

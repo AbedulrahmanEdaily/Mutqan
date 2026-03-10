@@ -9,12 +9,12 @@ namespace Mutqan.BLL.Services.Interface
 {
     public interface IProjectService:IScopedService
     {
-        Task<BaseResponse> CreateProjectAsync(string adminId, CreateProjectRequest request);
-        Task<BaseResponse> UpdateProjectAsync(string adminId, Guid projectId, UpdateProjectRequest request);
-        Task<BaseResponse> DeleteProjectAsync(string adminId, Guid projectId);
-        Task<List<ProjectResponse>> GetAllProjectAsync(string adminId);
-        Task<ProjectResponse?> GetProjectByIdAsync(string adminId, Guid projectId);
-        Task<BaseResponse> ChangeProjectStatusAsync(string adminId, ChangeProjectStatusRequest request);
+        Task<BaseResponse> CreateProjectAsync(string requesterId, CreateProjectRequest request);
+        Task<BaseResponse> UpdateProjectAsync(string requesterId, Guid projectId, UpdateProjectRequest request);
+        Task<BaseResponse> DeleteProjectAsync(string requesterId, Guid projectId);
+        Task<List<ProjectResponse>> GetAllProjectAsync(string requesterId);
+        Task<ProjectResponse?> GetProjectByIdAsync(string requesterId, Guid projectId);
+        Task<BaseResponse> ChangeProjectStatusAsync(string requesterId, ChangeProjectStatusRequest request);
 
     }
 }

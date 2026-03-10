@@ -12,6 +12,7 @@ namespace Mutqan.DAL.Repository.Interface
         Task<bool> isProjectMemberAsync(Guid projectId,string memberId);
         Task<bool> IsProjectHasManagerAsync(Guid projectId);
         Task<ProjectMember?> GetByProjectMemberIdAsync(Guid projectMemberId);
+        Task<ProjectMember?> GetProjectManagerAsync(Guid projectId);
         Task<ProjectMember?> GetByUserIdAsync(string userId);
         Task<ProjectMember?> GetByUserIdAndProjectIdAsync(Guid projectId,string userId);
         Task<List<ProjectMember>> GetAllAsync(Guid projectId);

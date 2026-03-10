@@ -11,15 +11,15 @@ namespace Mutqan.BLL.Services.Interface
 {
     public interface IProjectTaskService : IScopedService
     {
-        Task<BaseResponse> CreateTaskAsync(string adminId, CreateTaskRequest request);
-        Task<BaseResponse> UpdateTaskAsync(string adminId, Guid taskId, UpdateTaskRequest request);
-        Task<BaseResponse> DeleteTaskAsync(string adminId, Guid taskId);
-        Task<BaseResponse> AddTaskToSprintAsync(string adminId, AddTaskToSprintRequest request);
-        Task<BaseResponse> RemoveTaskFromSprintAsync(string adminId, Guid taskId);
-        Task<BaseResponse> ChangeTaskPriorityAsync(string adminId, Guid taskId, ChangeTaskPriorityRequest request);
+        Task<BaseResponse> CreateTaskAsync(string requesterId, CreateTaskRequest request);
+        Task<BaseResponse> UpdateTaskAsync(string requesterId, Guid taskId, UpdateTaskRequest request);
+        Task<BaseResponse> DeleteTaskAsync(string requesterId, Guid taskId);
+        Task<BaseResponse> AddTaskToSprintAsync(string requesterId, AddTaskToSprintRequest request);
+        Task<BaseResponse> RemoveTaskFromSprintAsync(string requesterId, Guid taskId);
+        Task<BaseResponse> ChangeTaskPriorityAsync(string requesterId, Guid taskId, ChangeTaskPriorityRequest request);
         Task<BaseResponse> ChangeTaskStatusAsync(string userId, Guid taskId, ChangeTaskStatusRequest request);
-        Task<BaseResponse> AssignTaskToDeveloperAsync(string adminId, Guid taskId, AssignTaskToDeveloperRequest request);
-        Task<List<ProjectTaskResponse>> GetAllTasksAsync(string adminId, Guid projectId);
-        Task<TaskDetailsResponse?> GetTaskDetailsAsync(string adminId, Guid taskId);
+        Task<BaseResponse> AssignTaskToDeveloperAsync(string requesterId, Guid taskId, AssignTaskToDeveloperRequest request);
+        Task<List<ProjectTaskResponse>> GetAllTasksAsync(string requesterId, Guid projectId);
+        Task<TaskDetailsResponse?> GetTaskDetailsAsync(string requesterId, Guid taskId);
     }
 }
