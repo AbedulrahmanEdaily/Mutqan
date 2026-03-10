@@ -298,33 +298,4 @@ DELETE /api/User/Notifications/{notificationId}
 WS /hubs/notifications
 ```
 
----
-
-## Getting Started
-
-### Prerequisites
-- .NET 8 SDK
-- SQL Server
-- Cloudinary Account
-
-### Installation
-
-```bash
-git clone https://github.com/AbedulrahmanEdaily/Mutqan
-cd Mutqan
-dotnet restore
-```
-
-### Database Setup
-
-```bash
-dotnet ef database update --project Mutqan.DAL --startup-project Mutqan.PL
-```
-
-### Run
-
-```bash
-dotnet run --project Mutqan.PL
-```
-
 *Built with ❤️ by Abdulrahman*
